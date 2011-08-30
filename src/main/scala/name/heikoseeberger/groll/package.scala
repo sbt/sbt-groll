@@ -17,25 +17,18 @@
 package name.heikoseeberger
 
 import java.io.File
-import scala.sys.process.{ Process, ProcessLogger }
+import scala.sys.process.{ ProcessBuilder, ProcessLogger }
 
 package object groll {
 
   val newLine = System.getProperty("line.separator")
 
-  /**
-   * Executes a command in a process using the process API from the standard library.
-   * @param command The command to be executed in a process. Must not be null!
-   * @param workingDir The optional working directory for the process. Defaults to None. Must not be null!
-   * @return The output of the process.
-   */
-  def execute(command: String, workingDir: File = new File(".")): Seq[String] = {
-    require(command != null, "command must not be null!")
-    require(workingDir != null, "workingDir must not be null!")
-    var (out, err) = (List[String](), List[String]())
-    val exitCode = Process(command, workingDir) ! ProcessLogger(s => out = s +: out, s => err = s +: err)
-    if (exitCode == 0) out.reverse else throw new ProcessException(err.reverse mkString newLine)
+  def execute(process: ProcessBuilder): Seq[String] = {
+    require(process != null, "process must not be null!")
+    var (out, err) = (Vector[String](), Vector[String]())
+    if (process ! ProcessLogger(out :+= _, err :+= _) == 0) out
+    else throw new ExecutionException(err mkString newLine)
   }
 
-  private[groll] class ProcessException(message: String) extends Exception(message)
+  private class ExecutionException(message: String) extends RuntimeException(message)
 }
