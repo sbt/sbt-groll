@@ -10,3 +10,5 @@ scalaVersion := "2.9.1"
 sbtPlugin := true
 
 scalacOptions ++= Seq("-unchecked", "-deprecation")
+
+publishTo := Some(Resolver.file("hseeberger", file("/Users/heiko/projects/hseeberger.github.com/snapshots"))(Resolver.ivyStylePatterns))
