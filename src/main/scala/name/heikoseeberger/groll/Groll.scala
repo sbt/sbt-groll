@@ -29,7 +29,7 @@ object Groll extends Plugin {
 
   private val (prev, next, head) = ("prev", "next", "head")
 
-  private def stateToArgs(state: State) = Space ~> prev | Space ~> prev | Space ~> head
+  private def stateToArgs(state: State) = Space ~> prev | Space ~> next | Space ~> head
 
   private val nextCommand = Command("groll")(stateToArgs) { (state, args) =>
 
