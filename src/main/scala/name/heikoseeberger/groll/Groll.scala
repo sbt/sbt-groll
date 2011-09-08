@@ -18,20 +18,21 @@ package name.heikoseeberger.groll
 
 import sbt.{ Command, Keys, Plugin, State }
 import sbt.CommandSupport.logger
-import sbt.complete.Parsers._
+import sbt.complete.Parser
+import sbt.complete.DefaultParsers._
 import scala.io.Source
 import scala.sys.process.Process
-
 
 object Groll extends Plugin {
 
   override def settings = Seq(Keys.commands += nextCommand)
 
-  private val (prev, next, head) = ("prev", "next", "head")
+  private val (move, prev, next, head) = ("move", "prev", "next", "head")
 
-  private def stateToArgs(state: State) = Space ~> prev | Space ~> next | Space ~> head
+  private def stateToArgs(state: State) =
+    (Space ~> move) ~ (Space ~> charClass(_ => true).+) | Space ~> prev | Space ~> next | Space ~> head
 
-  private val nextCommand = Command("groll")(stateToArgs) { (state, args) =>
+  private def nextCommand = Command("groll")(stateToArgs) { (state, args) =>
 
     def resetCleanCheckout(commit: String): Unit =
       execute(Process("git reset --hard") #&& "git clean -df" #&& ("git checkout %s" format commit))
@@ -44,34 +45,47 @@ object Groll extends Plugin {
       assert(history contains current, "Commit history must contain current commit!")
 
       args match {
+        case (`move`, chars: Seq[_]) => {
+          val commit = chars.mkString
+          if (current == commit) {
+            logger(state).warn("Already at commit: %s" format commit)
+            state
+          } else {
+            resetCleanCheckout(commit)
+            logger(state).info("Moved to commit: %s" format commit)
+            state.reload
+          }
+        }
         case `prev` => (history dropWhile { _ != current }).tail.headOption match {
           case None =>
             logger(state).warn("Already arrived at the first commit!")
             state
-          case Some(commit) =>
-            resetCleanCheckout(commit)
-            logger(state).info("Moved back to previous commit: %s" format commit)
+          case Some(prevCommit) =>
+            resetCleanCheckout(prevCommit)
+            logger(state).info("Moved back to previous commit: %s" format prevCommit)
             state.reload
         }
         case `next` => (history takeWhile { _ != current }).lastOption match {
           case None =>
             logger(state).warn("Already arrived at the head of the commit history!")
             state
-          case Some(commit) =>
-            resetCleanCheckout(commit)
-            logger(state).info("Moved forward to next commit: %s" format commit)
+          case Some(nextCommit) =>
+            resetCleanCheckout(nextCommit)
+            logger(state).info("Moved forward to next commit: %s" format nextCommit)
             state.reload
         }
-        case `head` =>
-          val commit = history.head
-          if (current == commit) {
+        case `head` => {
+          val headCommit = history.head
+          if (current == headCommit) {
             logger(state).warn("Already arrived at the head of the commit history!")
             state
           } else {
-            resetCleanCheckout(commit)
-            logger(state).info("Moved forward to the head of the commit history: %s" format commit)
+            resetCleanCheckout(headCommit)
+            logger(state).info("Moved forward to the head of the commit history: %s" format headCommit)
             state.reload
           }
+        }
+        case x => logger(state).info(x.toString); state
       }
     } catch {
       case e: Exception =>
