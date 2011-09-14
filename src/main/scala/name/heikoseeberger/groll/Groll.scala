@@ -52,6 +52,9 @@ object Groll {
       logger(state).debug("Current: %s" format current)
       assert(history map { _._1 } contains current, "Commit history must contain current commit!")
       args match {
+        case Show =>
+          logger(state).info("Current commit: %s %s".format(current, (history.toMap).apply(current)))
+          state
         case (Move, chars: Seq[_]) =>
           val id = chars.mkString
           val commit = if (current == id) None else Some(id -> "")
