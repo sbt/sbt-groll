@@ -3,7 +3,7 @@ organization := "name.heikoseeberger.groll"
 
 name := "groll"
 
-version := "0.3.0-SNAPSHOT"
+version := "0.3.0"
 
 sbtPlugin := true
 
