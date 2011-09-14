@@ -5,10 +5,17 @@ name := "groll"
 
 version := "0.3.0-SNAPSHOT"
 
-scalaVersion := "2.9.1"
-
 sbtPlugin := true
 
 scalacOptions ++= Seq("-unchecked", "-deprecation")
 
-publishTo := Some(Resolver.file("hseeberger", file("/Users/heiko/projects/hseeberger.github.com/snapshots"))(Resolver.ivyStylePatterns))
+publishTo <<= (version) { version =>
+  def hseeberger(name: String) =
+    Resolver.file("hseeberger-%s" format name, file("/Users/heiko/projects/hseeberger.github.com/%s" format name))(Resolver.ivyStylePatterns)
+  val resolver =
+    if (version endsWith "SNAPSHOT") hseeberger("snapshots")
+    else hseeberger("releases")
+  Option(resolver)
+}
+
+publishMavenStyle := false
