@@ -21,7 +21,7 @@ import scala.sys.process.{ ProcessBuilder, ProcessLogger }
 
 package object groll {
 
-  val newLine = System.getProperty("line.separator")
+  val newLine: String = System.getProperty("line.separator")
 
   def execute(process: ProcessBuilder): Seq[String] = {
     require(process != null, "process must not be null!")
