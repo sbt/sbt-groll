@@ -26,6 +26,8 @@ object GrollPlugin extends Plugin {
 
 object Groll {
 
+  val Show = "show"
+
   val Move = "move"
 
   val Prev = "prev"
@@ -36,58 +38,33 @@ object Groll {
 
   def parser(state: State) = {
     import sbt.complete.DefaultParsers._
-    (Space ~> Move) ~ (Space ~> charClass(_ => true).+) | Space ~> Prev | Space ~> Next | Space ~> Head
+    Space ~> Show | (Space ~> Move) ~ (Space ~> charClass(_ => true).+) | Space ~> Prev | Space ~> Next | Space ~> Head
   }
 
   def grollCommand = Command("groll")(parser) { (state, args) =>
     try {
-      val history = execute("git log --pretty=format:%h master")
+      val history = execute("git log --oneline master") map { commit =>
+        val (id, message) = commit splitAt 7
+        id -> message.tail
+      }
       logger(state).debug("History: %s" format (history mkString ", "))
       val current = execute("git log -n 1 --pretty=format:%h").head
       logger(state).debug("Current: %s" format current)
-      assert(history contains current, "Commit history must contain current commit!")
-
+      assert(history map { _._1 } contains current, "Commit history must contain current commit!")
       args match {
-        case (Move, chars: Seq[_]) => {
-          val commit = chars.mkString
-          if (current == commit) {
-            logger(state).warn("Already at commit: %s" format commit)
-            state
-          } else {
-            resetCleanCheckout(commit)
-            logger(state).info("Moved to commit: %s" format commit)
-            state.reload
-          }
-        }
-        case Prev => (history dropWhile { _ != current }).tail.headOption match {
-          case None =>
-            logger(state).warn("Already arrived at the first commit!")
-            state
-          case Some(prevCommit) =>
-            resetCleanCheckout(prevCommit)
-            logger(state).info("Moved back to previous commit: %s" format prevCommit)
-            state.reload
-        }
-        case Next => (history takeWhile { _ != current }).lastOption match {
-          case None =>
-            logger(state).warn("Already arrived at the head of the commit history!")
-            state
-          case Some(nextCommit) =>
-            resetCleanCheckout(nextCommit)
-            logger(state).info("Moved forward to next commit: %s" format nextCommit)
-            state.reload
-        }
-        case Head => {
-          val headCommit = history.head
-          if (current == headCommit) {
-            logger(state).warn("Already arrived at the head of the commit history!")
-            state
-          } else {
-            resetCleanCheckout(headCommit)
-            logger(state).info("Moved forward to the head of the commit history: %s" format headCommit)
-            state.reload
-          }
-        }
+        case (Move, chars: Seq[_]) =>
+          val id = chars.mkString
+          val commit = if (current == id) None else Some(id -> "")
+          groll("Already at commit: %s" format id, "Moved to commit: %s %s", state)(commit)
+        case Prev =>
+          val commit = (history dropWhile { case (id, _) => id != current }).tail.headOption
+          groll("Already arrived at the first commit!", "Moved back to previous commit: %s %s", state)(commit)
+        case Next =>
+          val commit = (history takeWhile { case (id, _) => id != current }).lastOption
+          groll("Already arrived at the head of the commit history!", "Moved forward to next commit: %s %s", state)(commit)
+        case Head =>
+          val commit = if (current == history.head._1) None else Some(history.head)
+          groll("Already arrived at the head of the commit history!", "Moved forward to the head of the commit history: %s %s", state)(commit)
       }
     } catch {
       case e: Exception =>
@@ -98,4 +75,14 @@ object Groll {
 
   private def resetCleanCheckout(commit: String): Unit =
     execute(Process("git reset --hard") #&& "git clean -df" #&& ("git checkout %s" format commit))
+
+  private def groll(warn: String, info: String, state: State): Option[(String, String)] => State = {
+    case None =>
+      logger(state).warn(warn)
+      state
+    case Some((id, message)) =>
+      resetCleanCheckout(id)
+      logger(state).info(info.format(id, message))
+      state.reload
+  }
 }
