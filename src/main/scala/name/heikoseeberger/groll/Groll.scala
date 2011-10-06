@@ -76,16 +76,21 @@ object Groll {
     }
   }
 
-  private def resetCleanCheckout(commit: String): Unit =
-    execute(Process("git reset --hard") #&& "git clean -df" #&& ("git checkout %s" format commit))
-
   private def groll(warn: String, info: String, state: State): Option[(String, String)] => State = {
     case None =>
       logger(state).warn(warn)
       state
     case Some((id, message)) =>
-      resetCleanCheckout(id)
+      val output = resetCleanCheckout(id)
       logger(state).info(info.format(id, message))
-      state.reload
+      if (output exists isBuildDefinition) state.reload else state
   }
+
+  private def resetCleanCheckout(commit: String) =
+    execute(Process("git reset --hard") #&&
+      "git clean -df" #&&
+      ("git diff --name-only %s" format commit) #&&
+      ("git checkout %s" format commit))
+
+  private def isBuildDefinition(s: String) = (s endsWith "build.sbt") || (s endsWith "Build.scala")
 }
