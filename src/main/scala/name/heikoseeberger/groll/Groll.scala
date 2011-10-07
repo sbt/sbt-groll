@@ -36,9 +36,11 @@ object Groll {
 
   val Head = "head"
 
+  val List = "list"
+
   def parser(state: State) = {
     import sbt.complete.DefaultParsers._
-    Space ~> Show | (Space ~> Move) ~ (Space ~> charClass(_ => true).+) | Space ~> Prev | Space ~> Next | Space ~> Head
+    Space ~> Show | (Space ~> Move) ~ (Space ~> charClass(_ => true).+) | Space ~> Prev | Space ~> Next | Space ~> Head | Space ~> List
   }
 
   def grollCommand = Command("groll")(parser) { (state, args) =>
@@ -68,6 +70,9 @@ object Groll {
         case Head =>
           val commit = if (current == history.head._1) None else Some(history.head)
           groll("Already arrived at the head of the commit history!", "Moved forward to the head of the commit history: %s %s", state)(commit)
+        case List =>
+          history foreach { case (id, msg) => logger(state).info("%s %s".format(id, msg)) }
+          state
       }
     } catch {
       case e: Exception =>
