@@ -7,7 +7,7 @@ version := "0.5.0-SNAPSHOT"
 
 sbtPlugin := true
 
-scalacOptions ++= Seq("-unchecked", "-deprecation")
+scalacOptions ++= Seq("-unchecked", "-deprecation", "-P:continuations:enable")
 
 publishTo <<= (version) { version =>
   def hseeberger(name: String) =
