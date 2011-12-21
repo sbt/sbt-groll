@@ -16,10 +16,18 @@
 
 package name.heikoseeberger.groll
 
-import sbt.{ Keys, Plugin, Setting }
+import sbt.{ Keys, Plugin, Setting, SettingKey }
 
 object GrollPlugin extends Plugin {
 
   override def settings: Seq[Setting[_]] =
     Seq(Keys.commands += Groll.grollCommand)
+
+  object GrollKeys {
+
+    val branch: SettingKey[String] =
+      SettingKey[String](prefix("branch"), "The branch used by groll.")
+
+    private def prefix(key: String) = "groll-" + key
+  }
 }

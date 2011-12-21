@@ -16,7 +16,8 @@
 
 package name.heikoseeberger.groll
 
-import sbt.{ Command, Keys, Plugin, State }
+import GrollPlugin.GrollKeys
+import sbt.{ Command, Keys, Plugin, State, ThisProject }
 import sbt.CommandSupport.logger
 import scala.sys.process.Process
 
@@ -35,9 +36,9 @@ private object Groll {
   def action(args: Any)(implicit state: State) = {
     import GrollOpts._
     try {
-      val history = execute(cmd + " log --oneline master") map idAndMessage
+      val history = execute("%s log --oneline %s".format(cmd, branch)) map idAndMessage
       logger(state).debug("History: %s" format (history mkString ", "))
-      val current = execute(cmd + " log -n 1 --pretty=format:%h").head
+      val current = execute("%s log -n 1 --pretty=format:%%h" format cmd).head
       logger(state).debug("Current: %s" format current)
       assert(history map fst contains current, "Commit history must contain current commit!")
       args match {
@@ -66,6 +67,9 @@ private object Groll {
         state.fail
     }
   }
+
+  def branch(implicit state: State) =
+    setting(GrollKeys.branch, ThisProject).fold(_ => "master")
 
   def idAndMessage(commit: String) = {
     val (id, message) = commit splitAt 7

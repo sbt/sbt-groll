@@ -16,8 +16,12 @@
 
 package name.heikoseeberger
 
+import sbt.{ Configuration, Configurations, Extracted, Project, Reference, SettingKey, State }
+import sbt.Load.BuildStructure
 import sbt.complete.Parser
 import scala.sys.process.{ ProcessBuilder, ProcessLogger }
+import scalaz.{ NonEmptyList, Validation }
+import scalaz.Scalaz._
 
 package object groll {
 
@@ -35,6 +39,17 @@ package object groll {
     (Space ~> key ~ ("=" ~> charClass(_ => true).+)) map { case (k, v) => k -> v.mkString }
   }
 
+  def setting[A](
+    key: SettingKey[A],
+    reference: Reference,
+    configuration: Configuration = Configurations.Default)(
+      implicit state: State): ValidationNELS[A] = {
+    key in (reference, configuration) get structure.data match {
+      case Some(a) => a.success
+      case None => "Missing setting '%s' for '%s'!".format(key.key, reference).failNel
+    }
+  }
+
   def execute(process: ProcessBuilder): Seq[String] = {
     var (out, err) = (Vector[String](), Vector[String]())
     if (process ! ProcessLogger(out :+= _, err :+= _) == 0)
@@ -42,4 +57,14 @@ package object groll {
     else
       sys.error(err mkString newLine)
   }
+
+  def extracted(implicit state: State): Extracted =
+    Project.extract(state)
+
+  def structure(implicit state: State): BuildStructure =
+    extracted.structure
+
+  type NELS = NonEmptyList[String]
+
+  type ValidationNELS[A] = Validation[NELS, A]
 }
