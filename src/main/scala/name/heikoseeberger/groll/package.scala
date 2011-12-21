@@ -16,19 +16,30 @@
 
 package name.heikoseeberger
 
-import java.io.File
+import sbt.complete.Parser
 import scala.sys.process.{ ProcessBuilder, ProcessLogger }
 
 package object groll {
 
   val newLine: String = System.getProperty("line.separator")
 
-  def execute(process: ProcessBuilder): Seq[String] = {
-    require(process != null, "process must not be null!")
-    var (out, err) = (Vector[String](), Vector[String]())
-    if (process ! ProcessLogger(out :+= _, err :+= _) == 0) out
-    else throw new ExecutionException(err mkString newLine)
+  def fst[A, B](pair: (A, B)): A = pair._1
+
+  def opt(key: String): Parser[String] = {
+    import sbt.complete.DefaultParsers._
+    (Space ~> key)
   }
 
-  private class ExecutionException(message: String) extends RuntimeException(message)
+  def stringOpt(key: String): Parser[(String, String)] = {
+    import sbt.complete.DefaultParsers._
+    (Space ~> key ~ ("=" ~> charClass(_ => true).+)) map { case (k, v) => k -> v.mkString }
+  }
+
+  def execute(process: ProcessBuilder): Seq[String] = {
+    var (out, err) = (Vector[String](), Vector[String]())
+    if (process ! ProcessLogger(out :+= _, err :+= _) == 0)
+      out
+    else
+      sys.error(err mkString newLine)
+  }
 }
