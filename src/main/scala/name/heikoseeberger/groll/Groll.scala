@@ -45,12 +45,12 @@ object Groll {
 
   def grollCommand = Command("groll")(parser) { (state, args) =>
     try {
-      val history = execute("git log --oneline master") map { commit =>
+      val history = execute(cmd+" log --oneline master") map { commit =>
         val (id, message) = commit splitAt 7
         id -> message.tail
       }
       logger(state).debug("History: %s" format (history mkString ", "))
-      val current = execute("git log -n 1 --pretty=format:%h").head
+      val current = execute(cmd+" log -n 1 --pretty=format:%h").head
       logger(state).debug("Current: %s" format current)
       assert(history map { _._1 } contains current, "Commit history must contain current commit!")
       args match {
@@ -90,12 +90,21 @@ object Groll {
       logger(state).info(info.format(id, message))
       if (output exists isBuildDefinition) state.reload else state
   }
-
+  
+   // TODO - Something less lame here.
+  def isWindowsShell = {
+		val ostype = System.getenv("OSTYPE")
+		val isCygwin = ostype != null && ostype.toLowerCase.contains("cygwin")
+		val isWindows = System.getProperty("os.name", "").toLowerCase.contains("windows")
+		isWindows && !isCygwin
+	}
+  private lazy val cmd = if(isWindowsShell) "cmd /c git" else "git"
+  
   private def resetCleanCheckout(commit: String) =
-    execute(Process("git reset --hard") #&&
-      "git clean -df" #&&
-      ("git diff --name-only %s" format commit) #&&
-      ("git checkout %s" format commit))
+    execute(Process(("%s reset --hard") format cmd) #&&
+      ("%s clean -df" format cmd) #&&
+      ("%s diff --name-only %s" format (cmd, commit)) #&&
+      ("%s checkout %s" format (cmd, commit)))
 
   private def isBuildDefinition(s: String) = (s endsWith "build.sbt") || (s endsWith "Build.scala")
 }
