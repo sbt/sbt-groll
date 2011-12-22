@@ -17,6 +17,9 @@ In order to add groll, just add the below setting to the relevant plugin definit
 
 ::
 
+  resolvers +=
+    Resolver.url("heikoseeberger", new URL("http://hseeberger.github.com/releases"))(Resolver.ivyStylePatterns)
+
   addSbtPlugin("name.heikoseeberger.groll" % "groll" % "1.0.0")
 
 After adding the groll plugin like this, you should either start sbt or, if it was already started, reload the current session by executing the *reload* command. If everything worked, you should have the new command *groll* available.
