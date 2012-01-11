@@ -25,8 +25,8 @@ object GrollPlugin extends Plugin {
 
   object GrollKeys {
 
-    val branch: SettingKey[String] =
-      SettingKey[String](prefix("branch"), "The branch used by groll.")
+    val revision: SettingKey[String] =
+      SettingKey[String](prefix("revision"), "The revision (branch or tag) used for the Git history.")
 
     private def prefix(key: String) = "groll-" + key
   }

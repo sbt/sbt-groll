@@ -36,30 +36,44 @@ private object Groll {
   def action(args: Any)(implicit state: State) = {
     import GrollOpts._
     try {
-      val history = execute("%s log --oneline %s".format(cmd, branch)) map idAndMessage
-      logger(state).debug("History: %s" format (history mkString ", "))
+      val revision = setting(GrollKeys.revision, ThisProject).fold(_ => "master")
       val current = execute("%s log -n 1 --pretty=format:%%h" format cmd).head
-      logger(state).debug("Current: %s" format current)
-      assert(history map fst contains current, "Commit history must contain current commit!")
+      val history = execute("%s log --oneline %s".format(cmd, revision)) map idAndMessage
       args match {
         case Show =>
-          logger(state).info("Current commit: %s %s".format(current, (history.toMap).apply(current)))
-          state
+          currentInHistory(current, history, revision)(
+            logger(state).info("Current commit: %s %s".format(current, history.toMap.apply(current)))
+          )
         case List =>
           history foreach { case (id, msg) => logger(state).info("%s %s".format(id, msg)) }
           state
         case Next =>
-          val commit = (history takeWhile { case (id, _) => id != current }).lastOption
-          groll("Already arrived at the head of the commit history!", "Moved forward to next commit: %s %s", state)(commit)
+          currentInHistory(current, history, revision)(
+            groll(
+              (history takeWhile { case (id, _) => id != current }).lastOption,
+              "Already arrived at the head of the commit history!",
+              "Moved forward to next commit: %s %s"
+            )
+          )
         case Prev =>
-          val commit = (history dropWhile { case (id, _) => id != current }).tail.headOption
-          groll("Already arrived at the first commit!", "Moved back to previous commit: %s %s", state)(commit)
+          currentInHistory(current, history, revision)(
+            groll(
+              (history dropWhile { case (id, _) => id != current }).tail.headOption,
+              "Already arrived at the first commit!",
+              "Moved back to previous commit: %s %s"
+            )
+          )
         case Head =>
-          val commit = if (current == history.head._1) None else Some(history.head)
-          groll("Already arrived at the head of the commit history!", "Moved forward to the head of the commit history: %s %s", state)(commit)
+          groll(
+            if (current == history.head._1) None else Some(history.head),
+            "Already arrived at the head of the commit history!",
+            "Moved forward to the head of the commit history: %s %s")
         case (Move, id: String) =>
-          val commit = if (current == id) None else Some(id -> "")
-          groll("Already at commit: %s" format id, "Moved to commit: %s %s", state)(commit)
+          groll(
+            if (current == id) None else Some(id -> ""),
+            "Already at commit: %s" format id,
+            "Moved to commit: %s %s"
+          )
       }
     } catch {
       case e: Exception =>
@@ -68,28 +82,39 @@ private object Groll {
     }
   }
 
-  def branch(implicit state: State) =
-    setting(GrollKeys.branch, ThisProject).fold(_ => "master")
-
   def idAndMessage(commit: String) = {
     val (id, message) = commit splitAt 7
     id -> message.tail
   }
 
-  def groll(warn: String, info: String, state: State): Option[(String, String)] => State = {
-    case None =>
-      logger(state).warn(warn)
-      state
-    case Some((id, message)) =>
-      val output = resetCleanCheckout(id)
-      logger(state).info(info.format(id, message))
-      if (output exists isBuildDefinition)
-        state.reload
-      else
-        state
+  def currentInHistory(
+    current: String,
+    history: Seq[(String, String)],
+    revision: String)(
+      block: => Unit)(
+        implicit state: State) = {
+    if (!(history map fst contains current))
+      logger(state).warn("Current commit '%s' is not part of the history of revision '%s'.".format(current, revision))
+    else
+      block
+    state
   }
 
-  def resetCleanCheckout(commit: String) =
+  def groll(idAndMessage: Option[(String, String)], warn: String, info: String)(implicit state: State) =
+    idAndMessage match {
+      case None =>
+        logger(state).warn(warn)
+        state
+      case Some((id, message)) =>
+        val output = resetCleanCheckout(id)
+        logger(state).info(info.format(id, message))
+        if (output exists isBuildDefinition)
+          state.reload
+        else
+          state
+    }
+
+  def resetCleanCheckout(commit: String)(implicit state: State) =
     execute(
       Process(("%s reset --hard") format cmd) #&&
         ("%s clean -df" format cmd) #&&

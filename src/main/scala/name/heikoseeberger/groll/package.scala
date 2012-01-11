@@ -17,6 +17,7 @@
 package name.heikoseeberger
 
 import sbt.{ Configuration, Configurations, Extracted, Project, Reference, SettingKey, State }
+import sbt.CommandSupport.logger
 import sbt.Load.BuildStructure
 import sbt.complete.Parser
 import scala.sys.process.{ ProcessBuilder, ProcessLogger }
@@ -45,17 +46,24 @@ package object groll {
     configuration: Configuration = Configurations.Default)(
       implicit state: State): ValidationNELS[A] = {
     key in (reference, configuration) get structure.data match {
-      case Some(a) => a.success
-      case None => "Missing setting '%s' for '%s'!".format(key.key, reference).failNel
+      case Some(a) =>
+        logger(state).debug("Setting '%s' for '%s' has value '%s'.".format(key.key, reference, a))
+        a.success
+      case None =>
+        logger(state).debug("Missing setting '%s' for '%s'!".format(key.key, reference))
+        "Missing setting '%s' for '%s'!".format(key.key, reference).failNel
     }
   }
 
-  def execute(process: ProcessBuilder): Seq[String] = {
+  def execute(process: ProcessBuilder)(implicit state: State): Seq[String] = {
+    logger(state).debug("About to execute process '%s'." format process)
     var (out, err) = (Vector[String](), Vector[String]())
-    if (process ! ProcessLogger(out :+= _, err :+= _) == 0)
+    val exitCode = process ! ProcessLogger(out :+= _, err :+= _)
+    if (exitCode == 0)
       out
-    else
-      sys.error(err mkString newLine)
+    else {
+      sys.error("Exit code: %s%s%s".format(exitCode, newLine, err mkString newLine))
+    }
   }
 
   def extracted(implicit state: State): Extracted =
