@@ -20,7 +20,7 @@ In order to add groll, just add the below setting to the relevant plugin definit
   resolvers +=
     Resolver.url("heikoseeberger", new URL("http://hseeberger.github.com/releases"))(Resolver.ivyStylePatterns)
 
-  addSbtPlugin("name.heikoseeberger.groll" % "groll" % "1.0.0")
+  addSbtPlugin("name.heikoseeberger.groll" % "groll" % "1.1.0")
 
 After adding the groll plugin like this, you should either start sbt or, if it was already started, reload the current session by executing the *reload* command. If everything worked, you should have the new command *groll* available.
 
@@ -43,7 +43,7 @@ Settings
 
 Groll can be configured by the following settings:
 
-- *branch: String* - The branch used by groll. If not defined, "master" is used.
+- *revision: String* - The revision (branch or tag) used for the Git history. If not defined, "master" is used.
 
 
 Options
@@ -51,10 +51,10 @@ Options
 
 The command *groll* must be followed by one of the following options:
 
-- *show*: Shows the current commit id and message
+- *show*: Shows the current commit id and message, if current commit is in history
 - *list*: Shows all commits
-- *next*: Moves to the next commit, reloading the sbt session if the build definition changed
-- *prev*: Moves to the previous commit, reloading the sbt session if the build definition changed
+- *next*: Moves to the next commit, reloading the sbt session if the build definition changed, if current commit is in history
+- *prev*: Moves to the previous commit, reloading the sbt session if the build definition changed, if current commit is in history
 - *head*: Moves to the head of the commit history, reloading the sbt session if the build definition changed
 - *move*: Moves to the given commit, reloading the sbt session if the build definition changed
 
