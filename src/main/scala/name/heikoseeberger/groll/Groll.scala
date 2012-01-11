@@ -45,7 +45,13 @@ private object Groll {
             logger(state).info("Current commit: %s %s".format(current, history.toMap.apply(current)))
           )
         case List =>
-          history foreach { case (id, msg) => logger(state).info("%s %s".format(id, msg)) }
+          history foreach {
+            case (id, msg) =>
+              if (id == current)
+                logger(state).info(">>>>>>> %s %s <<<<<<<".format(id, msg))
+              else
+                logger(state).info("%s %s".format(id, msg))
+          }
           state
         case Next =>
           currentInHistory(current, history, revision)(
