@@ -1,0 +1,7 @@
+This is the 1.1.1 release of [groll](http://github.com/hseeberger/groll/), a plugin for [sbt](https://github.com/harrah/xsbt/) to view and navigate through the [Git](http://git-scm.com/) history.
+
+This is a bugfix release:
+
+* [Issue #9](https://github.com/hseeberger/groll/issues/9): Missing reload of sbt session on build definition change in groll 1.1.0
+
+Please see the [README](http://github.com/hseeberger/groll/blob/master/README.rst) for information about installing and using groll.
