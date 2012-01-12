@@ -41,9 +41,10 @@ private object Groll {
       val history = execute("%s log --oneline %s".format(cmd, revision)) map idAndMessage
       args match {
         case Show =>
-          currentInHistory(current, history, revision)(
+          currentInHistory(current, history, revision) {
             logger(state).info("Current commit: %s %s".format(current, history.toMap.apply(current)))
-          )
+            state
+          }
         case List =>
           history foreach {
             case (id, msg) =>
@@ -97,13 +98,13 @@ private object Groll {
     current: String,
     history: Seq[(String, String)],
     revision: String)(
-      block: => Unit)(
+      block: => State)(
         implicit state: State) = {
-    if (!(history map fst contains current))
+    if (!(history map fst contains current)) {
       logger(state).warn("Current commit '%s' is not part of the history of revision '%s'.".format(current, revision))
-    else
+      state
+    } else
       block
-    state
   }
 
   def groll(idAndMessage: Option[(String, String)], warn: String, info: String)(implicit state: State) =
@@ -120,12 +121,12 @@ private object Groll {
           state
     }
 
-  def resetCleanCheckout(commit: String)(implicit state: State) =
+  def resetCleanCheckout(id: String)(implicit state: State) =
     execute(
       Process(("%s reset --hard") format cmd) #&&
         ("%s clean -df" format cmd) #&&
-        ("%s diff --name-only %s" format (cmd, commit)) #&&
-        ("%s checkout %s" format (cmd, commit)))
+        ("%s diff --name-only %s" format (cmd, id)) #&&
+        ("%s checkout %s" format (cmd, id)))
 
   def isBuildDefinition(s: String) = (s endsWith "build.sbt") || (s endsWith "Build.scala")
 
