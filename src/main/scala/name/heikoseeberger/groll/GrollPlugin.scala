@@ -25,6 +25,9 @@ object GrollPlugin extends Plugin {
 
   object GrollKeys {
 
+    val postCommands: SettingKey[Seq[String]] =
+      SettingKey[Seq[String]](prefix("post-commands"), "The commands to be executed after grolling.")
+
     val revision: SettingKey[String] =
       SettingKey[String](prefix("revision"), "The revision (branch or tag) used for the Git history.")
 

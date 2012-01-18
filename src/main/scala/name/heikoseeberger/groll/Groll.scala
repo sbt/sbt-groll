@@ -17,7 +17,7 @@
 package name.heikoseeberger.groll
 
 import GrollPlugin.GrollKeys
-import sbt.{ Command, Keys, Plugin, State, ThisProject }
+import sbt.{ Command, Keys, State, ThisProject }
 import sbt.CommandSupport.logger
 import scala.sys.process.Process
 
@@ -37,6 +37,7 @@ private object Groll {
     import GrollOpts._
     try {
       val revision = setting(GrollKeys.revision, ThisProject).fold(_ => "master")
+      val postCommands = setting(GrollKeys.postCommands, ThisProject).fold(_ => Nil)
       val current = execute("%s log -n 1 --pretty=format:%%h" format cmd).head
       val history = execute("%s log --oneline %s".format(cmd, revision)) map idAndMessage
       args match {
@@ -59,7 +60,8 @@ private object Groll {
             groll(
               (history takeWhile { case (id, _) => id != current }).lastOption,
               "Already arrived at the head of the commit history!",
-              "Moved forward to next commit: %s %s"
+              "Moved forward to next commit: %s %s",
+              postCommands
             )
           )
         case Prev =>
@@ -67,19 +69,23 @@ private object Groll {
             groll(
               (history dropWhile { case (id, _) => id != current }).tail.headOption,
               "Already arrived at the first commit!",
-              "Moved back to previous commit: %s %s"
+              "Moved back to previous commit: %s %s",
+              postCommands
             )
           )
         case Head =>
           groll(
             if (current == history.head._1) None else Some(history.head),
             "Already arrived at the head of the commit history!",
-            "Moved forward to the head of the commit history: %s %s")
+            "Moved forward to the head of the commit history: %s %s",
+            postCommands
+          )
         case (Move, id: String) =>
           groll(
             if (current == id) None else Some(id -> ""),
             "Already at commit: %s" format id,
-            "Moved to commit: %s %s"
+            "Moved to commit: %s %s",
+            postCommands
           )
       }
     } catch {
@@ -107,7 +113,12 @@ private object Groll {
       block
   }
 
-  def groll(idAndMessage: Option[(String, String)], warn: String, info: String)(implicit state: State) =
+  def groll(
+    idAndMessage: Option[(String, String)],
+    warn: String,
+    info: String,
+    postCommands: Seq[String])(
+      implicit state: State) =
     idAndMessage match {
       case None =>
         logger(state).warn(warn)
@@ -116,9 +127,9 @@ private object Groll {
         val output = resetCleanCheckout(id)
         logger(state).info(info.format(id, message))
         if (output exists isBuildDefinition)
-          state.reload
+          (postCommands ::: state).reload
         else
-          state
+          postCommands ::: state
     }
 
   def resetCleanCheckout(id: String)(implicit state: State) =
