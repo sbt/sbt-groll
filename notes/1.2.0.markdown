@@ -1,0 +1,13 @@
+This is the 1.2.0 release of [groll](http://github.com/hseeberger/groll/), a plugin for [sbt](https://github.com/harrah/xsbt/) to view and navigate through the [Git](http://git-scm.com/) history.
+
+Groll provides the command *groll* that provides various options to view and navigate through the Git history. Of course this means, that you can only use groll for projects using Git as version control system. If you are navigating through the Git history, groll will reload the sbt session if the build definition changed.
+
+New and noteworthy:
+
+* [Issue #10](https://github.com/hseeberger/groll/issues/10): Add support for executing commands after grolling
+
+Example:
+
+    GrollKeys.postCommands <<= EclipseKeys.commandName(Seq(_))
+
+Please see the [README](http://github.com/hseeberger/groll/blob/master/README.rst) for information about installing and using groll.

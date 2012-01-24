@@ -43,6 +43,7 @@ Settings
 
 Groll can be configured by the following settings:
 
+- *postCommands: Seq[String]* - The commands to be executed after grolling. If not defined, the empty sequence is used.
 - *revision: String* - The revision (branch or tag) used for the Git history. If not defined, "master" is used.
 
 
