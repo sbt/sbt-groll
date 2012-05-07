@@ -1,6 +1,4 @@
 
-import sbtrelease._
-
 organization := "name.heikoseeberger.groll"
 
 name := "groll"
@@ -13,45 +11,18 @@ scalacOptions ++= Seq("-unchecked", "-deprecation")
 
 libraryDependencies ++= Seq("org.scalaz" %% "scalaz-core" % "6.0.3")
 
-publishTo <<= (version) { version =>
-  def hseeberger(name: String) =
-    Resolver.file("hseeberger-%s" format name, file("/Users/heiko/projects/hseeberger.github.com/%s" format name))(Resolver.ivyStylePatterns)
-  val resolver =
-    if (version endsWith "SNAPSHOT") hseeberger("snapshots")
-    else hseeberger("releases")
-  Option(resolver)
+// sbt 0.12:
+//publishTo <<= isSnapshot(if (_) Some(Classpaths.sbtPluginSnapshots) else Some(Classpaths.sbtPluginReleases))
+publishTo <<= isSnapshot { isSnapshot =>
+  val SbtPluginRepositoryRoot = "http://scalasbt.artifactoryonline.com/scalasbt"
+  def sbtPluginRepo(status: String) = Resolver.url("sbt-plugin-" + status, new URL(SbtPluginRepositoryRoot + "/sbt-plugin-" + status + "/"))(Resolver.ivyStylePatterns)
+  if (isSnapshot) Some(sbtPluginRepo("snapshots")) else Some(sbtPluginRepo("releases"))
 }
 
 publishMavenStyle := false
 
-seq(posterousSettings: _*)
+sbtrelease.Release.releaseSettings
 
-(email in Posterous) <<= PropertiesKeys.properties(_ get "posterous.email")
+scalariformSettings
 
-(password in Posterous) <<= PropertiesKeys.properties(_ get "posterous.password")
-
-seq(propertiesSettings: _*)
-
-seq(Release.releaseSettings: _*)
-
-ReleaseKeys.releaseProcess <<= thisProjectRef { ref =>
-  import ReleaseStateTransformations._
-  Seq[ReleasePart](
-    initialGitChecks,
-    checkSnapshotDependencies,
-    releaseTask(check in Posterous in ref),
-    inquireVersions,
-    runTest,
-    setReleaseVersion,
-    commitReleaseVersion,
-    tagRelease,
-    releaseTask(publish in Global in ref),
-    releaseTask(publish in Posterous in ref),
-    setNextVersion,
-    commitNextVersion
-  )
-}
-
-seq(scalariformSettings: _*)
-
-seq(scriptedSettings: _*)
+scriptedSettings

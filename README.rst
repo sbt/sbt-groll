@@ -7,7 +7,7 @@ Plugin for `sbt`_ to view and navigate through the `Git`_ history.
 Installing groll
 ----------------
 
-Groll is a plugin for `sbt`_ 0.11.2 or higher. Please make sure that you are using an appropriate sbt release. In order to download and install sbt, please refer to the `sbt Getting Started Guide / Setup`_. Additionally groll requires a `Git`_ installation.
+Groll is a plugin for `sbt`_ 0.11.3 or higher. Please make sure that you are using an appropriate sbt release. In order to download and install sbt, please refer to the `sbt Getting Started Guide / Setup`_. Additionally groll requires a `Git`_ installation.
 
 As groll is a plugin for sbt, it is installed like any other sbt plugin, that is by mere configuration. For details about using sbt plugins, please refer to the `sbt Getting Started Guide / Using Plugins`_. 
 
@@ -18,7 +18,7 @@ In order to add groll, just add the below setting to the relevant plugin definit
 ::
 
   resolvers +=
-    Resolver.url("heikoseeberger", new URL("http://hseeberger.github.com/releases"))(Resolver.ivyStylePatterns)
+    Resolver.url("sbt-plugin-releases", new URL("http://scalasbt.artifactoryonline.com/scalasbt/sbt-plugin-releases"))(Resolver.ivyStylePatterns)
 
   addSbtPlugin("name.heikoseeberger.groll" % "groll" % "1.2.0")
 
