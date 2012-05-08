@@ -7,13 +7,13 @@ Plugin for `sbt`_ to view and navigate through the `Git`_ history.
 Installing groll
 ----------------
 
-Groll is a plugin for `sbt`_ 0.11.3 or higher. Please make sure that you are using an appropriate sbt release. In order to download and install sbt, please refer to the `sbt Getting Started Guide / Setup`_. Additionally groll requires a `Git`_ installation.
+groll is a plugin for `sbt`_ 0.11.3 or higher. Please make sure that you are using an appropriate sbt release. In order to download and install sbt, please refer to the `sbt Getting Started Guide / Setup`_. Additionally groll requires a `Git`_ installation.
 
 As groll is a plugin for sbt, it is installed like any other sbt plugin, that is by mere configuration. For details about using sbt plugins, please refer to the `sbt Getting Started Guide / Using Plugins`_. 
 
-Most probably you can skip the details and just add groll to your global or local plugin definition. Global plugin are defined in a *plugins.sbt* file in the *~/.sbt/plugins/* directory and local plugins are defined in a *plugins.sbt* file in the *project/* folder of your project. 
+Most probably you can skip the details and just add groll to your global or local plugin definition. Global plugins are defined in a *plugins.sbt* file in the *~/.sbt/plugins/* directory and local plugins are defined in a *plugins.sbt* file in the *project/* folder of your project. 
 
-In order to add groll, just add the below setting to the relevant plugin definition, paying attention to blank lines between settings:
+In order to add groll, just add the below settings to the relevant plugin definition, paying attention to blank lines between settings:
 
 ::
 
