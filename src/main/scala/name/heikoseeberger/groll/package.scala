@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Heiko Seeberger
+ * Copyright 2011-2012 Heiko Seeberger
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 package name.heikoseeberger
 
 import sbt.{ Configuration, Configurations, Extracted, Project, Reference, SettingKey, State }
-import sbt.CommandSupport.logger
 import sbt.Load.BuildStructure
 import sbt.complete.Parser
 import scala.sys.process.{ ProcessBuilder, ProcessLogger }
@@ -47,16 +46,16 @@ package object groll {
       implicit state: State): ValidationNELS[A] = {
     key in (reference, configuration) get structure.data match {
       case Some(a) =>
-        logger(state).debug("Setting '%s' for '%s' has value '%s'.".format(key.key, reference, a))
+        state.log.debug("Setting '%s' for '%s' has value '%s'.".format(key.key, reference, a))
         a.success
       case None =>
-        logger(state).debug("Missing setting '%s' for '%s'!".format(key.key, reference))
+        state.log.debug("Missing setting '%s' for '%s'!".format(key.key, reference))
         "Missing setting '%s' for '%s'!".format(key.key, reference).failNel
     }
   }
 
   def execute(process: ProcessBuilder)(implicit state: State): Seq[String] = {
-    logger(state).debug("About to execute process '%s'." format process)
+    state.log.debug("About to execute process '%s'." format process)
     var (out, err) = (Vector[String](), Vector[String]())
     val exitCode = process ! ProcessLogger(out :+= _, err :+= _)
     if (exitCode == 0)

@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Heiko Seeberger
+ * Copyright 2011-2012 Heiko Seeberger
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@ package name.heikoseeberger.groll
 
 import GrollPlugin.GrollKeys
 import sbt.{ Command, Keys, State, ThisProject }
-import sbt.CommandSupport.logger
 import scala.sys.process.Process
 
 private object Groll {
@@ -43,16 +42,16 @@ private object Groll {
       args match {
         case Show =>
           currentInHistory(current, history, revision) {
-            logger(state).info("Current commit: %s %s".format(current, history.toMap.apply(current)))
+            state.log.info("Current commit: %s %s".format(current, history.toMap.apply(current)))
             state
           }
         case List =>
           history foreach {
             case (id, msg) =>
               if (id == current)
-                logger(state).info(">>>>>>> %s %s <<<<<<<".format(id, msg))
+                state.log.info(">>>>>>> %s %s <<<<<<<".format(id, msg))
               else
-                logger(state).info("%s %s".format(id, msg))
+                state.log.info("%s %s".format(id, msg))
           }
           state
         case Next =>
@@ -90,7 +89,7 @@ private object Groll {
       }
     } catch {
       case e: Exception =>
-        logger(state).error(e.getMessage)
+        state.log.error(e.getMessage)
         state.fail
     }
   }
@@ -107,7 +106,7 @@ private object Groll {
       block: => State)(
         implicit state: State) = {
     if (!(history map fst contains current)) {
-      logger(state).warn("Current commit '%s' is not part of the history of revision '%s'.".format(current, revision))
+      state.log.warn("Current commit '%s' is not part of the history of revision '%s'.".format(current, revision))
       state
     } else
       block
@@ -121,11 +120,11 @@ private object Groll {
       implicit state: State) =
     idAndMessage match {
       case None =>
-        logger(state).warn(warn)
+        state.log.warn(warn)
         state
       case Some((id, message)) =>
         val output = resetCleanCheckout(id)
-        logger(state).info(info.format(id, message))
+        state.log.info(info.format(id, message))
         if (output exists isBuildDefinition)
           (postCommands ::: state).reload
         else
@@ -143,8 +142,10 @@ private object Groll {
 
   // TODO - Something less lame here.
   def isWindowsShell = {
-    val ostype = System.getenv("OSTYPE")
-    val isCygwin = ostype != null && ostype.toLowerCase.contains("cygwin")
+    val isCygwin = {
+      val ostype = System.getenv("OSTYPE")
+      ostype != null && ostype.toLowerCase.contains("cygwin")
+    }
     val isWindows = System.getProperty("os.name", "").toLowerCase.contains("windows")
     isWindows && !isCygwin
   }

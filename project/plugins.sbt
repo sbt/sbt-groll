@@ -1,12 +1,8 @@
 
 resolvers ++= Seq(
-  "gseitz@github" at "http://gseitz.github.com/maven/"
+//  Classpaths.sbtPluginSnapshots
 )
 
-addSbtPlugin("com.github.gseitz" % "sbt-release" % "0.4")
+//addSbtPlugin("com.github.gseitz" % "sbt-release" % "0.5-SNAPSHOT")
 
-addSbtPlugin("com.typesafe.sbtscalariform" % "sbtscalariform" % "0.3.1")
-
-libraryDependencies <+= (sbtVersion)(sbtVersion =>
-  "org.scala-sbt" %% "scripted-plugin" % sbtVersion
-)
+addSbtPlugin("com.typesafe.sbtscalariform" % "sbtscalariform" % "0.5.0-SNAPSHOT")
