@@ -37,6 +37,10 @@ In order to use groll, just execute the command *groll* in an sbt session, givin
   > groll show
   [info] Current commit: 534ef78 Exercise: Add XML serialization to Time
 
+::
+
+  > groll move=bc1ac93
+  [info] Moved to commit: bc1ac93
 
 Settings
 --------
