@@ -13,12 +13,7 @@ As groll is a plugin for sbt, it is installed like any other sbt plugin, that is
 
 Most probably you can skip the details and just add groll to your global or local plugin definition. Global plugins are defined in a *plugins.sbt* file in the *~/.sbt/plugins/* directory and local plugins are defined in a *plugins.sbt* file in the *project/* folder of your project. 
 
-In order to add groll, just add the below settings to the relevant plugin definition, paying attention to blank lines between settings:
-
-::
-
-  resolvers +=
-    Resolver.url("sbt-plugin-releases", new URL("http://scalasbt.artifactoryonline.com/scalasbt/sbt-plugin-releases"))(Resolver.ivyStylePatterns)
+In order to add groll, just add the below setting to the relevant plugin definition, paying attention to blank lines between settings::
 
   addSbtPlugin("name.heikoseeberger.groll" % "groll" % "1.3.0")
 
@@ -34,9 +29,7 @@ In order to use groll, just execute the command *groll* in an sbt session, givin
 
   > groll show
   [info] Current commit: 534ef78 Exercise: Add XML serialization to Time
-
-::
-
+  >
   > groll move=bc1ac93
   [info] Moved to commit: bc1ac93
 
