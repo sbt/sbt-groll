@@ -7,7 +7,7 @@ Plugin for `sbt`_ to view and navigate through the `Git`_ history.
 Installing groll
 ----------------
 
-groll is a plugin for `sbt`_ 0.11.3 or higher. Please make sure that you are using an appropriate sbt release. In order to download and install sbt, please refer to the `sbt Getting Started Guide / Setup`_. Additionally groll requires a `Git`_ installation.
+groll is a plugin for `sbt`_ 0.12. Please make sure that you are using an appropriate sbt release. In order to download and install sbt, please refer to the `sbt Getting Started Guide / Setup`_. Additionally groll requires a `Git`_ installation.
 
 As groll is a plugin for sbt, it is installed like any other sbt plugin, that is by mere configuration. For details about using sbt plugins, please refer to the `sbt Getting Started Guide / Using Plugins`_. 
 
@@ -20,7 +20,7 @@ In order to add groll, just add the below settings to the relevant plugin defini
   resolvers +=
     Resolver.url("sbt-plugin-releases", new URL("http://scalasbt.artifactoryonline.com/scalasbt/sbt-plugin-releases"))(Resolver.ivyStylePatterns)
 
-  addSbtPlugin("name.heikoseeberger.groll" % "groll" % "1.2.0")
+  addSbtPlugin("name.heikoseeberger.groll" % "groll" % "1.3.0")
 
 After adding the groll plugin like this, you should either start sbt or, if it was already started, reload the current session by executing the *reload* command. If everything worked, you should have the new command *groll* available.
 
@@ -30,9 +30,7 @@ Using groll
 
 Groll provides the command *groll* that provides various options to view and navigate through the Git history. Of course this means, that you can only use groll for projects using Git as version control system. If you are navigating through the Git history, groll will reload the sbt session if the build definition changed.
 
-In order to use groll, just execute the command *groll* in an sbt session, giving one of the options described below:
-
-::
+In order to use groll, just execute the command *groll* in an sbt session, giving one of the options described below::
 
   > groll show
   [info] Current commit: 534ef78 Exercise: Add XML serialization to Time

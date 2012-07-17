@@ -16,3 +16,5 @@ publishTo <<= isSnapshot(if (_) Some(Classpaths.sbtPluginSnapshots) else Some(Cl
 publishMavenStyle := false
 
 scalariformSettings
+
+releaseSettings
