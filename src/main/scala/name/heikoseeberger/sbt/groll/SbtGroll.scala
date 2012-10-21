@@ -14,19 +14,23 @@
  * limitations under the License.
  */
 
-package name.heikoseeberger.groll
+package name.heikoseeberger.sbt.groll
 
-private object GrollOpts {
+import sbt.{ Keys, Plugin, Setting, SettingKey }
 
-  val Show = "show"
+object SbtGroll extends Plugin {
 
-  val List = "list"
+  override def settings: Seq[Setting[_]] =
+    Seq(Keys.commands += Groll.grollCommand)
 
-  val Next = "next"
+  object GrollKeys {
 
-  val Prev = "prev"
+    val postCommands: SettingKey[Seq[String]] =
+      SettingKey[Seq[String]](prefix("post-commands"), "The commands to be executed after grolling.")
 
-  val Head = "head"
+    val revision: SettingKey[String] =
+      SettingKey[String](prefix("revision"), "The revision (branch or tag) used for the Git history.")
 
-  val Move = "move"
+    private def prefix(key: String) = "groll-" + key
+  }
 }

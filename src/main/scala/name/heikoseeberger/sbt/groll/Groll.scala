@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package name.heikoseeberger.groll
+package name.heikoseeberger.sbt.groll
 
-import GrollPlugin.GrollKeys
+import SbtGroll.GrollKeys
 import sbt.{ Command, Keys, State, ThisProject }
 import scala.sys.process.Process
 

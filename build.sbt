@@ -1,7 +1,7 @@
 
-organization := "name.heikoseeberger.groll"
+organization := "name.heikoseeberger.sbt.groll"
 
-name := "groll"
+name := "sbt-groll"
 
 // version is defined in version.sbt in order to support sbt-release
 

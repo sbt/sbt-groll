@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package name.heikoseeberger
+package name.heikoseeberger.sbt
 
 import sbt.{ Configuration, Configurations, Extracted, Project, Reference, SettingKey, State }
 import sbt.Load.BuildStructure
