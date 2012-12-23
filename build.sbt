@@ -1,5 +1,5 @@
 
-organization := "name.heikoseeberger.sbt.groll"
+organization := "name.heikoseeberger"
 
 name := "sbt-groll"
 
@@ -8,8 +8,6 @@ name := "sbt-groll"
 sbtPlugin := true
 
 scalacOptions ++= Seq("-unchecked", "-deprecation")
-
-libraryDependencies ++= Seq("org.scalaz" %% "scalaz-core" % "6.0.3")
 
 publishTo <<= isSnapshot(if (_) Some(Classpaths.sbtPluginSnapshots) else Some(Classpaths.sbtPluginReleases))
 

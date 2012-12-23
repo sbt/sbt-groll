@@ -52,6 +52,7 @@ The command *groll* must be followed by one of the following options:
 - *next*: Moves to the next commit, reloading the sbt session if the build definition changed, if current commit is in history
 - *prev*: Moves to the previous commit, reloading the sbt session if the build definition changed, if current commit is in history
 - *head*: Moves to the head of the commit history, reloading the sbt session if the build definition changed
+- *initial*: Moves to a commit with message "Initial state"
 - *move*: Moves to the given commit, reloading the sbt session if the build definition changed
 
 

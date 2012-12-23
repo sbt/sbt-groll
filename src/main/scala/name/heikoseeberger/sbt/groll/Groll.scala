@@ -16,6 +16,7 @@
 
 package name.heikoseeberger.sbt.groll
 
+import GrollOpts._
 import SbtGroll.GrollKeys
 import sbt.{ Command, Keys, State, ThisProject }
 import scala.sys.process.Process
@@ -27,21 +28,19 @@ private object Groll {
   def grollCommand = Command("groll")(parser)((state, args) => action(args)(state))
 
   def parser(state: State) = {
-    import GrollOpts._
     import sbt.complete.DefaultParsers._
-    opt(Show) | opt(List) | opt(Next) | opt(Prev) | opt(Head) | stringOpt(Move)
+    opt(Show) | opt(List) | opt(Next) | opt(Prev) | opt(Head) | opt(Initial) | stringOpt(Move)
   }
 
-  def action(args: Any)(implicit state: State) = {
-    import GrollOpts._
+  def action(args: Any)(implicit state: State) =
     try {
-      val revision = setting(GrollKeys.revision, ThisProject).fold(_ => "master")
-      val postCommands = setting(GrollKeys.postCommands, ThisProject).fold(_ => Nil)
+      val revision = GrollKeys.revision in ThisProject get structure.data getOrElse "master"
+      val postCommands = GrollKeys.postCommands in ThisProject get structure.data getOrElse Nil
       val current = execute("%s log -n 1 --pretty=format:%%h" format cmd).head
       val history = execute("%s log --oneline %s".format(cmd, revision)) map idAndMessage
       args match {
         case Show =>
-          currentInHistory(current, history, revision) {
+          withCurrentInHistory(current, history, revision) {
             state.log.info("Current commit: %s %s".format(current, history.toMap.apply(current)))
             state
           }
@@ -55,7 +54,7 @@ private object Groll {
           }
           state
         case Next =>
-          currentInHistory(current, history, revision)(
+          withCurrentInHistory(current, history, revision)(
             groll(
               (history takeWhile { case (id, _) => id != current }).lastOption,
               "Already arrived at the head of the commit history!",
@@ -64,7 +63,7 @@ private object Groll {
             )
           )
         case Prev =>
-          currentInHistory(current, history, revision)(
+          withCurrentInHistory(current, history, revision)(
             groll(
               (history dropWhile { case (id, _) => id != current }).tail.headOption,
               "Already arrived at the first commit!",
@@ -75,6 +74,13 @@ private object Groll {
         case Head =>
           groll(
             if (current == history.head._1) None else Some(history.head),
+            "Already arrived at the head of the commit history!",
+            "Moved forward to the head of the commit history: %s %s",
+            postCommands
+          )
+        case Initial =>
+          groll(
+            history find { case (_, message) => message == "Initial state" },
             "Already arrived at the head of the commit history!",
             "Moved forward to the head of the commit history: %s %s",
             postCommands
@@ -92,14 +98,13 @@ private object Groll {
         state.log.error(e.getMessage)
         state.fail
     }
-  }
 
   def idAndMessage(commit: String) = {
     val (id, message) = commit splitAt 7
     id -> message.tail
   }
 
-  def currentInHistory(
+  def withCurrentInHistory(
     current: String,
     history: Seq[(String, String)],
     revision: String)(
@@ -140,7 +145,6 @@ private object Groll {
 
   def isBuildDefinition(s: String) = (s endsWith "build.sbt") || (s endsWith "Build.scala")
 
-  // TODO - Something less lame here.
   def isWindowsShell = {
     val isCygwin = {
       val ostype = System.getenv("OSTYPE")

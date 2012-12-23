@@ -28,5 +28,7 @@ private object GrollOpts {
 
   val Head = "head"
 
+  val Initial = "initial"
+
   val Move = "move"
 }

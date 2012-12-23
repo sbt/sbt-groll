@@ -16,18 +16,17 @@
 
 package name.heikoseeberger.sbt
 
-import sbt.{ Configuration, Configurations, Extracted, Project, Reference, SettingKey, State }
-import sbt.Load.BuildStructure
+import sbt.{ Extracted, Load, Project, State }
 import sbt.complete.Parser
 import scala.sys.process.{ ProcessBuilder, ProcessLogger }
-import scalaz.{ NonEmptyList, Validation }
-import scalaz.Scalaz._
 
 package object groll {
 
-  val newLine: String = System.getProperty("line.separator")
+  val newLine: String =
+    System.getProperty("line.separator")
 
-  def fst[A, B](pair: (A, B)): A = pair._1
+  def fst[A, B](pair: (A, B)): A =
+    pair._1
 
   def opt(key: String): Parser[String] = {
     import sbt.complete.DefaultParsers._
@@ -39,39 +38,19 @@ package object groll {
     (Space ~> key ~ ("=" ~> charClass(_ => true).+)) map { case (k, v) => k -> v.mkString }
   }
 
-  def setting[A](
-    key: SettingKey[A],
-    reference: Reference,
-    configuration: Configuration = Configurations.Default)(
-      implicit state: State): ValidationNELS[A] = {
-    key in (reference, configuration) get structure.data match {
-      case Some(a) =>
-        state.log.debug("Setting '%s' for '%s' has value '%s'.".format(key.key, reference, a))
-        a.success
-      case None =>
-        state.log.debug("Missing setting '%s' for '%s'!".format(key.key, reference))
-        "Missing setting '%s' for '%s'!".format(key.key, reference).failNel
-    }
-  }
-
   def execute(process: ProcessBuilder)(implicit state: State): Seq[String] = {
     state.log.debug("About to execute process '%s'." format process)
     var (out, err) = (Vector[String](), Vector[String]())
     val exitCode = process ! ProcessLogger(out :+= _, err :+= _)
     if (exitCode == 0)
       out
-    else {
+    else
       sys.error("Exit code: %s%s%s".format(exitCode, newLine, err mkString newLine))
-    }
   }
 
   def extracted(implicit state: State): Extracted =
-    Project.extract(state)
+    Project extract state
 
-  def structure(implicit state: State): BuildStructure =
+  def structure(implicit state: State): Load.BuildStructure =
     extracted.structure
-
-  type NELS = NonEmptyList[String]
-
-  type ValidationNELS[A] = Validation[NELS, A]
 }
