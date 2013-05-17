@@ -15,7 +15,7 @@ Most probably you can skip the details and just add groll to your global or loca
 
 In order to add groll, just add the below setting to the relevant plugin definition, paying attention to blank lines between settings::
 
-  addSbtPlugin("name.heikoseeberger.sbt.groll" % "sbt-groll" % "1.5.0")
+  addSbtPlugin("name.heikoseeberger" % "sbt-groll" % "1.5.0")
 
 After adding the groll plugin like this, you should either start sbt or, if it was already started, reload the current session by executing the *reload* command. If everything worked, you should have the new command *groll* available.
 
