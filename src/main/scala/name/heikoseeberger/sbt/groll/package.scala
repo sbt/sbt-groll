@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2012 Heiko Seeberger
+ * Copyright 2011-2013 Heiko Seeberger
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +16,13 @@
 
 package name.heikoseeberger.sbt
 
-import sbt.{ Extracted, Load, Project, State }
+import sbt.{ BuildStructure, Extracted, Project, State }
 import sbt.complete.Parser
+import scala.collection.immutable.Seq
 import scala.sys.process.{ ProcessBuilder, ProcessLogger }
+import scala.util.Properties.{ lineSeparator => newLine }
 
 package object groll {
-
-  val newLine: String =
-    System.getProperty("line.separator")
 
   def fst[A, B](pair: (A, B)): A =
     pair._1
@@ -51,6 +50,6 @@ package object groll {
   def extracted(implicit state: State): Extracted =
     Project extract state
 
-  def structure(implicit state: State): Load.BuildStructure =
+  def structure(implicit state: State): BuildStructure =
     extracted.structure
 }

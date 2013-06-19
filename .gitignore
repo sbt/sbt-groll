@@ -1,7 +1,8 @@
-# SBT
-boot/
-target/
+# sbt
 .history
+boot/
+lib_managed/
+target/
 
 # Eclipse
 .cache
@@ -10,16 +11,19 @@ target/
 .scala_dependencies
 .settings
 .target/
+.worksheet/
+*.sc
 
 # IntelliJ
 .idea/
+out/
 *.iml
 *.ipr
 *.iws
-out/
 
-# TextMate
-*.tmproj
+# ENSIME
+.ensime
+.ensime_lucene/
 
 # Mac
 .DS_Store

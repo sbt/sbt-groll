@@ -3,16 +3,24 @@ organization := "name.heikoseeberger"
 
 name := "sbt-groll"
 
-// version is defined in version.sbt in order to support sbt-release
+// TODO Move version to version.sbt in order to support sbt-release
+version := "1.6.0-SNAPSHOT"
+
+scalacOptions ++= Seq(
+  "-unchecked",
+  "-deprecation",
+  "-Xlint",
+  "-language:_",
+  "-target:jvm-1.6",
+  "-encoding", "UTF-8"
+)
 
 sbtPlugin := true
 
-scalacOptions ++= Seq("-unchecked", "-deprecation")
-
-publishTo <<= isSnapshot(if (_) Some(Classpaths.sbtPluginSnapshots) else Some(Classpaths.sbtPluginReleases))
+publishTo := { 
+  import Classpaths._
+  val repo = if (isSnapshot.value) sbtPluginSnapshots else sbtPluginReleases
+  Some(repo)
+}
 
 publishMavenStyle := false
-
-scalariformSettings
-
-releaseSettings

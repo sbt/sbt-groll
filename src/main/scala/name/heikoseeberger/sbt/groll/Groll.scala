@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2012 Heiko Seeberger
+ * Copyright 2011-2013 Heiko Seeberger
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,16 @@
 
 package name.heikoseeberger.sbt.groll
 
-import GrollOpts._
 import SbtGroll.GrollKeys
 import sbt.{ Command, Keys, State, ThisProject }
+import scala.collection.immutable.Seq
 import scala.sys.process.Process
 
 private object Groll {
+
+  import GrollOpts._
+
+  val BuildDefinition = """project/.*\.scala""".r
 
   val cmd = if (isWindowsShell) "cmd /c git" else "git"
 
@@ -143,7 +147,7 @@ private object Groll {
         ("%s diff --name-only %s" format (cmd, id)) #&&
         ("%s checkout %s" format (cmd, id)))
 
-  def isBuildDefinition(s: String) = (s endsWith "build.sbt") || (s endsWith "Build.scala")
+  def isBuildDefinition(s: String) = (s endsWith ".sbt") || BuildDefinition.findFirstIn(s).isDefined
 
   def isWindowsShell = {
     val isCygwin = {

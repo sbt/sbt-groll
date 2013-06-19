@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2012 Heiko Seeberger
+ * Copyright 2011-2013 Heiko Seeberger
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,20 +17,27 @@
 package name.heikoseeberger.sbt.groll
 
 import sbt.{ Keys, Plugin, Setting, SettingKey }
+import scala.collection.immutable.Seq
 
 object SbtGroll extends Plugin {
 
   override def settings: Seq[Setting[_]] =
-    Seq(Keys.commands += Groll.grollCommand)
+    List(Keys.commands += Groll.grollCommand)
 
   object GrollKeys {
 
     val postCommands: SettingKey[Seq[String]] =
-      SettingKey[Seq[String]](prefix("post-commands"), "The commands to be executed after grolling.")
+      SettingKey[Seq[String]](
+        prefixed("postCommands"),
+        """The commands to be executed after "rolling"."""
+      )
 
     val revision: SettingKey[String] =
-      SettingKey[String](prefix("revision"), "The revision (branch or tag) used for the Git history.")
+      SettingKey[String](
+        prefixed("revision"),
+        "The revision (branch or tag) used for the Git history."
+      )
 
-    private def prefix(key: String) = "groll-" + key
+    private def prefixed(key: String) = "groll" + key.capitalize
   }
 }
