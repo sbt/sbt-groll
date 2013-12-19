@@ -16,6 +16,10 @@
 
 package name.heikoseeberger
 
+import java.io.File
+import java.nio.file.{ Path, Paths }
+import org.eclipse.jgit.revwalk.RevCommit
+
 package object sbtgroll {
 
   type Traversable[+A] = scala.collection.immutable.Traversable[A]
@@ -25,4 +29,22 @@ package object sbtgroll {
   type Seq[+A] = scala.collection.immutable.Seq[A]
 
   type IndexedSeq[+A] = scala.collection.immutable.IndexedSeq[A]
+
+  implicit class RevCommitOps(commit: RevCommit) {
+
+    def shortId: String =
+      (commit abbreviate 7).name
+  }
+
+  implicit class PathOps(path: Path) {
+
+    def /(name: String): Path =
+      path resolve name
+  }
+
+  implicit def pathToFile(path: Path): File =
+    path.toFile
+
+  val tmpDir: Path =
+    Paths get System.getProperty("java.io.tmpdir", "/tmp")
 }
