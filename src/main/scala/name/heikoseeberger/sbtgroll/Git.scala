@@ -31,4 +31,7 @@ class Git(repository: Repository) {
 
   def resetHard(ref: String = "master"): Unit =
     jgit.reset.setMode(ResetCommand.ResetType.HARD).setRef(ref).call()
+
+  def clean(): Unit =
+    jgit.clean.setCleanDirectories(true).setIgnore(true).call()
 }
