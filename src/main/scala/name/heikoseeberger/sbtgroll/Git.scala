@@ -24,6 +24,15 @@ class Git(repository: Repository) {
 
   private val jgit = new JGit(repository)
 
+  def checkout(ref: String, branch: String = "current"): Unit = {
+    jgit.checkout.setName("master").call()
+    jgit.branchDelete.setBranchNames(branch).setForce(true).call()
+    jgit.checkout.setStartPoint(ref).setName(branch).setCreateBranch(true).call()
+  }
+
+  def clean(): Unit =
+    jgit.clean.setCleanDirectories(true).setIgnore(true).call()
+
   def history(ref: String = "master"): Seq[(String, String)] = {
     val id = repository.getRef(ref).getObjectId
     jgit.log.add(id).call().toList map (commit => commit.shortId -> commit.getShortMessage)
@@ -31,7 +40,4 @@ class Git(repository: Repository) {
 
   def resetHard(ref: String = "master"): Unit =
     jgit.reset.setMode(ResetCommand.ResetType.HARD).setRef(ref).call()
-
-  def clean(): Unit =
-    jgit.clean.setCleanDirectories(true).setIgnore(true).call()
 }

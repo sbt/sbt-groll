@@ -24,6 +24,34 @@ import scala.sys.process._
 
 class GitSpec extends WordSpec with Matchers {
 
+  "Calling Git.checkout" should {
+    "check out a new branch with the correct history" in {
+      val f = fixture()
+      import f._
+      git.checkout("872b865", "current")
+      git.history("current") shouldEqual
+        List(
+          "872b865" -> "Add 2.txt",
+          "f695224" -> "Add 1.txt"
+        )
+    }
+  }
+
+  "Calling Git.clean" should {
+    "leave a clean repo unchanged" in {
+      val f = fixture()
+      import f._
+      git.clean()
+      contents(path) map (_.toString) shouldEqual Set("1.txt", "2.txt", "4.txt")
+    }
+    "clean a dirty repo" in {
+      val f = fixture("-dirty")
+      import f._
+      git.clean()
+      contents(path) map (_.toString) shouldEqual Set("1.txt", "2.txt", "4.txt", "5.txt") // 5.txt has been staged, 6.txt is untracked
+    }
+  }
+
   "Calling Git.history" should {
     "return the correct history" in {
       val f = fixture()
@@ -59,21 +87,6 @@ class GitSpec extends WordSpec with Matchers {
           "872b865" -> "Add 2.txt",
           "f695224" -> "Add 1.txt"
         )
-    }
-  }
-
-  "Calling Git.clean" should {
-    "leave a clean repo unchanged" in {
-      val f = fixture()
-      import f._
-      git.clean()
-      contents(path) map (_.toString) shouldEqual Set("1.txt", "2.txt", "4.txt")
-    }
-    "clean a dirty repo" in {
-      val f = fixture("-dirty")
-      import f._
-      git.clean()
-      contents(path) map (_.toString) shouldEqual Set("1.txt", "2.txt", "4.txt", "5.txt") // 5.txt has been staged, 6.txt is untracked
     }
   }
 
