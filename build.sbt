@@ -2,7 +2,7 @@ organization := "name.heikoseeberger"
 
 name := "sbt-groll"
 
-version := "0.1.0"
+// version in version.sbt for sbt-release
 
 scalaVersion := Version.scala
 
