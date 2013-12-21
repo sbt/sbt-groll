@@ -22,13 +22,10 @@ import scala.sys.process._
 
 class GitSpec extends WordSpec with Matchers {
 
-  s"unzip -qo -d $tmpDir src/test/test-repo.zip".!
-
-  val repository = (new FileRepositoryBuilder).setWorkTree(tmpDir / "test-repo").build()
-
   "Calling Git.history" should {
     "return the correct history" in {
-      val git = new Git(repository)
+      val f = fixture("history")
+      import f._
       git.history() shouldEqual
         List(
           "d26c92e" -> "Add 4.txt",
@@ -38,4 +35,25 @@ class GitSpec extends WordSpec with Matchers {
         )
     }
   }
+
+  "Calling Git.resetHard" should {
+    "return the correct history" in {
+      val f = fixture("resetHard")
+      import f._
+      git.resetHard("52e5f8e")
+      git.history() shouldEqual
+        List(
+          "52e5f8e" -> "Change 1.txt",
+          "872b865" -> "Add 2.txt",
+          "f695224" -> "Add 1.txt"
+        )
+    }
+  }
+
+  def fixture(qualifier: String) =
+    new {
+      s"unzip -qo -d $tmpDir src/test/test-repo-$qualifier.zip".!
+      val repository = (new FileRepositoryBuilder).setWorkTree(tmpDir / s"test-repo-$qualifier").build()
+      val git = new Git(repository)
+    }
 }

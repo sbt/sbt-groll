@@ -16,16 +16,19 @@
 
 package name.heikoseeberger.sbtgroll
 
-import org.eclipse.jgit.api.{ Git => JGit }
+import org.eclipse.jgit.api.{ Git => JGit, ResetCommand }
 import org.eclipse.jgit.lib.Repository
 import scala.collection.JavaConversions.iterableAsScalaIterable
 
 class Git(repository: Repository) {
 
-  val jgit = new JGit(repository)
+  private val jgit = new JGit(repository)
 
-  def history(revision: String = "master"): Seq[(String, String)] = {
-    val id = (repository getRef revision).getObjectId
+  def history(ref: String = "master"): Seq[(String, String)] = {
+    val id = repository.getRef(ref).getObjectId
     jgit.log.add(id).call().toList map (commit => commit.shortId -> commit.getShortMessage)
   }
+
+  def resetHard(ref: String = "master"): Unit =
+    jgit.reset.setMode(ResetCommand.ResetType.HARD).setRef(ref).call()
 }
