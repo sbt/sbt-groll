@@ -61,12 +61,12 @@ package object sbtgroll {
     (Space ~> key ~ ("=" ~> charClass(_ => true).+)) map { case (k, v) => k -> v.mkString }
   }
 
-  def setting[A](key: SettingKey[A])(implicit state: State) =
+  def setting[A](key: SettingKey[A], state: State) =
     key in ThisProject get structure(state).data getOrElse sys.error(s"$key undefined!")
 
-  def structure(implicit state: State): BuildStructure =
-    extracted.structure
+  def structure(state: State): BuildStructure =
+    extracted(state).structure
 
-  def extracted(implicit state: State): Extracted =
+  def extracted(state: State): Extracted =
     Project extract state
 }

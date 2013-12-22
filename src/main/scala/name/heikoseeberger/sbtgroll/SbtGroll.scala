@@ -22,10 +22,16 @@ object SbtGroll extends Plugin {
 
   object GrollKeys {
 
-    val ref: SettingKey[String] =
+    val historyRef: SettingKey[String] =
       SettingKey[String](
-        prefixed("ref"),
-        "The ref (commit id, branch or tag) used for the Git history."
+        prefixed("historyRef"),
+        "The ref (commit id, branch or tag) used for the Git history; 'master' by default"
+      )
+
+    val workingBranch: SettingKey[String] =
+      SettingKey[String](
+        prefixed("workingBranch"),
+        "The working branch used by sbt-groll; 'groll' by default"
       )
 
     private def prefixed(key: String) = "groll" + key.capitalize
@@ -34,6 +40,7 @@ object SbtGroll extends Plugin {
   override def settings: Seq[Setting[_]] =
     List(
       Keys.commands += Groll.grollCommand,
-      GrollKeys.ref := "master"
+      GrollKeys.historyRef := "master",
+      GrollKeys.workingBranch := "groll"
     )
 }

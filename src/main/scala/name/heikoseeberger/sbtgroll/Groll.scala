@@ -17,110 +17,118 @@
 package name.heikoseeberger.sbtgroll
 
 import SbtGroll.GrollKeys
-import sbt.{ Command, Keys, State, ThisProject }
+import sbt.{ Command, Keys, State }
 
 private object Groll {
 
   import GrollOpts._
 
-  val buildDefinition = """.+sbt|project/.+\.scala""".r
+  object Action {
+    def apply(args: Any, state: State): Action =
+      new Action(args, state)
+  }
 
-  def grollCommand = Command("groll")(parser)((state, args) => action(args)(state))
+  class Action(args: Any, state: State) {
+
+    val git = Git(setting(Keys.baseDirectory, state))
+
+    val historyRef = setting(GrollKeys.historyRef, state)
+
+    val workingBranch = setting(GrollKeys.workingBranch, state)
+
+    val (currentId, currentMessage) = git.current
+
+    val history = git.history(historyRef)
+
+    def apply(): State =
+      try {
+        args match {
+          case Show =>
+            withCurrentInHistory {
+              state.log.info(s"== $currentId $currentMessage")
+              state
+            }
+          case List =>
+            for ((id, message) <- history) {
+              if (id == currentId)
+                state.log.info(s"== $id $message")
+              else
+                state.log.info(s"   $id $message")
+            }
+            state
+          case Next =>
+            withCurrentInHistory {
+              groll(
+                (history takeWhile { case (id, _) => id != currentId }).lastOption,
+                "Already at the head of the commit history!",
+                (id, message) => s">> $id $message"
+              )
+            }
+          case Prev =>
+            withCurrentInHistory {
+              groll(
+                (history dropWhile { case (id, _) => id != currentId }).tail.headOption,
+                "Already at the first commit!",
+                (id, message) => s"<< $id $message"
+              )
+            }
+          case Head =>
+            groll(
+              if (currentId == history.head._1) None else Some(history.head),
+              "Already at the head of the commit history!",
+              (id, message) => s">> $id $message"
+            )
+          case Initial =>
+            groll(
+              history find { case (_, message) => message startsWith "Initial state" },
+              "There's no commit with a message starting with 'Initial state'!",
+              (id, message) => s"<< $id $message"
+            )
+          case (Move, id: String) =>
+            groll(
+              if (currentId == id) None else Some(id -> history.toMap.getOrElse(id, "")),
+              s"Already at $id",
+              (id, message) => s"<> $id $message"
+            )
+        }
+      } catch {
+        case e: Exception =>
+          state.log.error(e.getMessage)
+          state.fail
+      }
+
+    def withCurrentInHistory(block: => State): State = {
+      if (!(history map fst contains currentId)) {
+        state.log.warn(s"Current commit '$currentId' is not part of the history defined by '$historyRef'.")
+        state
+      } else
+        block
+    }
+
+    def groll(idAndMessage: Option[(String, String)], warn: => String, info: (String, String) => String): State =
+      idAndMessage match {
+        case None =>
+          state.log.warn(warn)
+          state
+        case Some((id, message)) =>
+          git.resetHard(workingBranch)
+          git.clean()
+          git.checkout(id, workingBranch)
+          state.log.info(info(id, message))
+          // if ()
+          //   state.reload
+          // else
+          //   state
+          state
+      }
+  }
+
+  // val buildDefinition = """.+sbt|project/.+\.scala""".r
+
+  def grollCommand = Command("groll")(parser)((state, args) => Action(args, state)())
 
   def parser(state: State) = {
     import sbt.complete.DefaultParsers._
     opt(Show) | opt(List) | opt(Next) | opt(Prev) | opt(Head) | opt(Initial) | stringOpt(Move)
   }
-
-  def action(args: Any)(implicit state: State) =
-    try {
-      implicit val git = Git(setting(Keys.baseDirectory))
-      val grollRef = setting(GrollKeys.ref)
-      val (currentId, currentMessage) = git.current
-      val history = git.history(grollRef)
-      args match {
-        case Show =>
-          withCurrentInHistory(currentId, history, grollRef) {
-            state.log.info(s"== $currentId $currentMessage")
-            state
-          }
-        case List =>
-          for ((id, message) <- history) {
-            if (id == currentId)
-              state.log.info(s"== $id $message")
-            else
-              state.log.info(s"   $id $message")
-          }
-          state
-        case Next =>
-          withCurrentInHistory(currentId, history, grollRef)(
-            groll(
-              (history takeWhile { case (id, _) => id != currentId }).lastOption,
-              "Already at the head of the commit history!",
-              (id, message) => s">> $id $message"
-            )
-          )
-        case Prev =>
-          withCurrentInHistory(currentId, history, grollRef)(
-            groll(
-              (history dropWhile { case (id, _) => id != currentId }).tail.headOption,
-              "Already at the first commit!",
-              (id, message) => s"<< $id $message"
-            )
-          )
-        case Head =>
-          groll(
-            if (currentId == history.head._1) None else Some(history.head),
-            "Already at the head of the commit history!",
-            (id, message) => s">> $id $message"
-          )
-        case Initial =>
-          groll(
-            history find { case (_, message) => message == "Initial state" },
-            "There's no commit with message 'Initial state'!",
-            (id, message) => s"<< $id $message"
-          )
-        case (Move, id: String) =>
-          groll(
-            if (currentId == id) None else Some(id -> history.toMap.getOrElse(id, "")),
-            s"Already at $id",
-            (id, message) => s"<> $id $message"
-          )
-      }
-    } catch {
-      case e: Exception =>
-        state.log.error(e.getMessage)
-        state.fail
-    }
-
-  def withCurrentInHistory(
-    currentId: String,
-    history: Seq[(String, String)],
-    ref: String)(
-      block: => State)(
-        implicit state: State): State = {
-    if (!(history map fst contains currentId)) {
-      state.log.warn(s"Current commit '$currentId' is not part of the history of Groll ref '$ref'.")
-      state
-    } else
-      block
-  }
-
-  def groll(idAndMessage: Option[(String, String)], warn: => String, info: (String, String) => String)(
-    implicit git: Git, state: State): State =
-    idAndMessage match {
-      case None =>
-        state.log.warn(warn)
-        state
-      case Some((id, message)) =>
-        git.resetHard("master")
-        git.clean()
-        git.checkout(id, "groll")
-        state.log.info(info(id, message))
-        // if ()
-        //   state.reload
-        // else
-        //   state
-        state
-    }
 }
