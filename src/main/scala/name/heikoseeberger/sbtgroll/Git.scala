@@ -16,9 +16,17 @@
 
 package name.heikoseeberger.sbtgroll
 
+import java.io.File
 import org.eclipse.jgit.api.{ Git => JGit, ResetCommand }
 import org.eclipse.jgit.lib.Repository
+import org.eclipse.jgit.revwalk.RevCommit
+import org.eclipse.jgit.storage.file.FileRepositoryBuilder
 import scala.collection.JavaConversions.iterableAsScalaIterable
+
+object Git {
+  def apply(workTree: File): Git =
+    new Git((new FileRepositoryBuilder).setWorkTree(workTree).build())
+}
 
 class Git(repository: Repository) {
 
@@ -33,11 +41,17 @@ class Git(repository: Repository) {
   def clean(): Unit =
     jgit.clean.setCleanDirectories(true).setIgnore(true).call()
 
+  def current(): (String, String) =
+    (jgit.log.setMaxCount(1).call().toList map idAndMessage).head
+
   def history(ref: String = "master"): Seq[(String, String)] = {
     val id = repository.getRef(ref).getObjectId
-    jgit.log.add(id).call().toList map (commit => commit.shortId -> commit.getShortMessage)
+    jgit.log.add(id).call().toList map idAndMessage
   }
 
   def resetHard(ref: String = "master"): Unit =
     jgit.reset.setMode(ResetCommand.ResetType.HARD).setRef(ref).call()
+
+  private def idAndMessage(commit: RevCommit) =
+    commit.shortId -> commit.getShortMessage
 }

@@ -52,6 +52,14 @@ class GitSpec extends WordSpec with Matchers {
     }
   }
 
+  "Calling Git.current" should {
+    "return the correct commit" in {
+      val f = fixture()
+      import f._
+      git.current() shouldEqual "d26c92e" -> "Add 4.txt"
+    }
+  }
+
   "Calling Git.history" should {
     "return the correct history" in {
       val f = fixture()
