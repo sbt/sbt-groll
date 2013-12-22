@@ -1,3 +1,5 @@
+import sbtrelease.{ Version => ReleaseVersion, versionFormatError }
+
 releaseSettings
 
-ReleaseKeys.versionBump := sbtrelease.Version.Bump.Minor
+ReleaseKeys.nextVersion := (v => ReleaseVersion(v) map (_.bumpMinor.string) getOrElse versionFormatError)
