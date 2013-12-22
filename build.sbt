@@ -21,3 +21,9 @@ scalacOptions ++= List(
 )
 
 initialCommands := "import name.heikoseeberger.sbtgroll._"
+
+sbtPlugin := true
+
+publishTo := Some(if (isSnapshot.value) Classpaths.sbtPluginSnapshots else Classpaths.sbtPluginReleases)
+
+publishMavenStyle := false
