@@ -6,14 +6,14 @@ Plugin for [sbt](http://www.scala-sbt.org) to "roll" – view and navigate – t
 
 sbt-groll is a plugin for sbt. In order to install sbt, please refer to the [sbt documentation](http://www.scala-sbt.org/release/docs/Getting-Started/Setup.html). Please make sure that you are using a suitable version of sbt:
 
-- sbt-groll 2.0 → sbt 0.13
+- sbt-groll 2.x → sbt 0.13
 
 As sbt-groll is a plugin for sbt, it is installed like any other sbt plugin, that is by mere configuration: just add sbt-groll to your global or local plugin definition. Global plugins are defined in `~/.sbt/<SBT_VERSION>/plugins/plugins.sbt` and local plugins are defined in `project/plugins.sbt` in your project.
 
 In order to add sbt-groll as a plugin, just add the below setting to the relevant plugin definition, paying attention to blank lines between settings:
 
 ```
-addSbtPlugin("name.heikoseeberger" % "sbt-groll" % "2.0.0")
+addSbtPlugin("name.heikoseeberger" % "sbt-groll" % "2.1.0")
 ```
 
 After adding the sbt-groll plugin like this, you should either start sbt or, if it was already started, reload the current session by executing the `reload` command. If everything worked, you should have the new `groll` command available.
@@ -22,7 +22,7 @@ After adding the sbt-groll plugin like this, you should either start sbt or, if 
 
 sbt-groll adds the `groll` command that provides various options to view and navigate the Git history. Of course this means, that you can only use sbt-groll for projects which are using Git as version control system.
 
-(currently not supported) If you are navigating through the Git history, i.e. moving to some commit, sbt-groll will reload the sbt session if the build definition changed.
+If you navigate the Git history, i.e. move to some commit, sbt-groll reloads the sbt session if the build definition changes.
 
 In order to use sbt-groll, just execute `groll` in an sbt session, giving one of the options described below:
 
