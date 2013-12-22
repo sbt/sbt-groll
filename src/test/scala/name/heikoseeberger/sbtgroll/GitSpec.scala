@@ -60,6 +60,14 @@ class GitSpec extends WordSpec with Matchers {
     }
   }
 
+  "Calling Git.diff" should {
+    "return the correct diff" in {
+      val f = fixture()
+      import f._
+      git.diff("head", "52e5f8e") shouldEqual List("4.txt")
+    }
+  }
+
   "Calling Git.history" should {
     "return the correct history" in {
       val f = fixture()

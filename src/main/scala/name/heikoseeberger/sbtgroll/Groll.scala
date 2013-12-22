@@ -115,15 +115,14 @@ private object Groll {
           git.clean()
           git.checkout(id, workingBranch)
           state.log.info(info(id, message))
-          // if ()
-          //   state.reload
-          // else
-          //   state
-          state
+          if (git.diff(id, currentId) exists (s => buildDefinition.pattern.matcher(s).matches))
+            state.reload
+          else
+            state
       }
   }
 
-  // val buildDefinition = """.+sbt|project/.+\.scala""".r
+  val buildDefinition = """.+sbt|project/.+\.scala""".r
 
   def grollCommand = Command("groll")(parser)((state, args) => Action(args, state)())
 
