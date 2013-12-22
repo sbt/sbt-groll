@@ -19,6 +19,8 @@ package name.heikoseeberger
 import java.io.File
 import java.nio.file.{ Path, Paths }
 import org.eclipse.jgit.revwalk.RevCommit
+import sbt.{ BuildStructure, Extracted, Project, SettingKey, State, ThisProject }
+import sbt.complete.Parser
 
 package object sbtgroll {
 
@@ -31,13 +33,11 @@ package object sbtgroll {
   type IndexedSeq[+A] = scala.collection.immutable.IndexedSeq[A]
 
   implicit class RevCommitOps(commit: RevCommit) {
-
     def shortId: String =
       (commit abbreviate 7).name
   }
 
   implicit class PathOps(path: Path) {
-
     def /(name: String): Path =
       path resolve name
   }
@@ -47,4 +47,26 @@ package object sbtgroll {
 
   val tmpDir: Path =
     Paths get System.getProperty("java.io.tmpdir", "/tmp")
+
+  def fst[A, B](pair: (A, B)): A =
+    pair._1
+
+  def opt(key: String): Parser[String] = {
+    import sbt.complete.DefaultParsers._
+    (Space ~> key)
+  }
+
+  def stringOpt(key: String): Parser[(String, String)] = {
+    import sbt.complete.DefaultParsers._
+    (Space ~> key ~ ("=" ~> charClass(_ => true).+)) map { case (k, v) => k -> v.mkString }
+  }
+
+  def setting[A](key: SettingKey[A])(implicit state: State) =
+    key in ThisProject get structure(state).data getOrElse sys.error(s"$key undefined!")
+
+  def structure(implicit state: State): BuildStructure =
+    extracted.structure
+
+  def extracted(implicit state: State): Extracted =
+    Project extract state
 }

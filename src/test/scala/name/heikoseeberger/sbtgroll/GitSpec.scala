@@ -28,8 +28,8 @@ class GitSpec extends WordSpec with Matchers {
     "check out a new branch with the correct history" in {
       val f = fixture()
       import f._
-      git.checkout("872b865", "current")
-      git.history("current") shouldEqual
+      git.checkout("872b865", "groll")
+      git.history("groll") shouldEqual
         List(
           "872b865" -> "Add 2.txt",
           "f695224" -> "Add 1.txt"

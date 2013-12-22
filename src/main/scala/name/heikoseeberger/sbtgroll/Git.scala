@@ -32,7 +32,7 @@ class Git(repository: Repository) {
 
   private val jgit = new JGit(repository)
 
-  def checkout(ref: String, branch: String = "current"): Unit = {
+  def checkout(ref: String, branch: String = "groll"): Unit = {
     jgit.checkout.setName("master").call()
     jgit.branchDelete.setBranchNames(branch).setForce(true).call()
     jgit.checkout.setStartPoint(ref).setName(branch).setCreateBranch(true).call()
