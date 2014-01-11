@@ -36,7 +36,7 @@ private object Groll {
 
     val workingBranch = setting(GrollKeys.workingBranch, state)
 
-    val (currentId, currentMessage) = git.current
+    val (currentId, currentMessage) = git.current()
 
     val history = git.history(historyRef)
 
