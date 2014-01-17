@@ -111,7 +111,7 @@ private object Groll {
           state.log.warn(warn)
           state
         case Some((id, message)) =>
-          git.resetHard(workingBranch)
+          git.resetHard()
           git.clean()
           git.checkout(id, workingBranch)
           state.log.info(info(id, message))

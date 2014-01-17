@@ -86,9 +86,11 @@ class GitSpec extends WordSpec with Matchers {
     "work for a clean repo" in {
       val f = fixture()
       import f._
-      git.resetHard("872b865")
+      git.resetHard()
       git.history() shouldEqual
         List(
+          "d26c92e" -> "Add 4.txt",
+          "52e5f8e" -> "Change 1.txt",
           "872b865" -> "Add 2.txt",
           "f695224" -> "Add 1.txt"
         )
@@ -96,9 +98,10 @@ class GitSpec extends WordSpec with Matchers {
     "work for a dirty repo" in {
       val f = fixture("-dirty")
       import f._
-      git.resetHard("52e5f8e")
+      git.resetHard()
       git.history() shouldEqual
         List(
+          "d26c92e" -> "Add 4.txt",
           "52e5f8e" -> "Change 1.txt",
           "872b865" -> "Add 2.txt",
           "f695224" -> "Add 1.txt"

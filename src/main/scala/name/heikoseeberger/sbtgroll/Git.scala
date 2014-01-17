@@ -51,8 +51,8 @@ class Git(repository: Repository) {
   def history(ref: String = "master"): Seq[(String, String)] =
     jgit.log.add(repository.resolve(ref)).call().toList map idAndMessage
 
-  def resetHard(ref: String = "master"): Unit =
-    jgit.reset.setMode(ResetCommand.ResetType.HARD).setRef(ref).call()
+  def resetHard(): Unit =
+    jgit.reset.setMode(ResetCommand.ResetType.HARD).call()
 
   private def idAndMessage(commit: RevCommit) =
     commit.shortId -> commit.getShortMessage

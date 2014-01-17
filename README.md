@@ -13,7 +13,7 @@ As sbt-groll is a plugin for sbt, it is installed like any other sbt plugin, tha
 In order to add sbt-groll as a plugin, just add the below setting to the relevant plugin definition, paying attention to blank lines between settings:
 
 ```
-addSbtPlugin("name.heikoseeberger" % "sbt-groll" % "2.1.0")
+addSbtPlugin("name.heikoseeberger" % "sbt-groll" % "2.2.0")
 ```
 
 After adding the sbt-groll plugin like this, you should either start sbt or, if it was already started, reload the current session by executing the `reload` command. If everything worked, you should have the new `groll` command available.
