@@ -32,9 +32,9 @@ private object Groll {
 
     val git = Git(setting(Keys.baseDirectory, state))
 
-    val historyRef = setting(GrollKeys.historyRef, state)
+    val historyRef = setting(GrollKeys.historyRef, "master", state)
 
-    val workingBranch = setting(GrollKeys.workingBranch, state)
+    val workingBranch = setting(GrollKeys.workingBranch, "groll", state)
 
     val (currentId, currentMessage) = git.current()
 

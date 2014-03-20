@@ -39,8 +39,6 @@ object SbtGroll extends Plugin {
 
   override def settings: Seq[Setting[_]] =
     List(
-      Keys.commands += Groll.grollCommand,
-      GrollKeys.historyRef := "master",
-      GrollKeys.workingBranch := "groll"
+      Keys.commands += Groll.grollCommand
     )
 }

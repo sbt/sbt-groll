@@ -64,6 +64,9 @@ package object sbtgroll {
   def setting[A](key: SettingKey[A], state: State) =
     key in ThisProject get structure(state).data getOrElse sys.error(s"$key undefined!")
 
+  def setting[A](key: SettingKey[A], default: A, state: State) =
+    key in ThisProject get structure(state).data getOrElse default
+
   def structure(state: State): BuildStructure =
     extracted(state).structure
 
