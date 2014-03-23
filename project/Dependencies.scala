@@ -1,9 +1,9 @@
 import sbt._
 
 object Version {
-  val scala     = "2.10.3"
+  val scala     = "2.10.4"
   val jgit      = "3.1.0.201310021548-r"
-  val scalaTest = "2.0"
+  val scalaTest = "2.1.2"
 }
 
 object Library {
