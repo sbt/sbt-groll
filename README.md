@@ -50,7 +50,7 @@ The `groll` command must be followed by one of the following options:
 - `prev`: Moves to the previous commit
 - `head`: Moves to the head of the commit history
 - `initial`: Moves to a commit with a message starting with "Initial state"
-- `move <commit>`: Moves to the given commit
+- `move=<commit>`: Moves to the given commit
 
 ## Contribution policy ##
 
