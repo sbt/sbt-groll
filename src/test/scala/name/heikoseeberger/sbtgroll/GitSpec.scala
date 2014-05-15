@@ -16,7 +16,8 @@
 
 package name.heikoseeberger.sbtgroll
 
-import java.nio.file.{ FileVisitResult, Files, Path, SimpleFileVisitor }
+import java.io.File
+import java.nio.file.{ FileVisitResult, Files, Path, Paths, SimpleFileVisitor }
 import java.nio.file.attribute.BasicFileAttributes
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder
 import org.scalatest.{ Matchers, WordSpec }
@@ -42,13 +43,13 @@ class GitSpec extends WordSpec with Matchers {
       val f = fixture()
       import f._
       git.clean()
-      contents(path) map (_.toString) shouldEqual Set("1.txt", "2.txt", "4.txt")
+      contents(dir) map (_.toString) shouldEqual Set("1.txt", "2.txt", "4.txt")
     }
     "clean a dirty repo" in {
       val f = fixture("-dirty")
       import f._
       git.clean()
-      contents(path) map (_.toString) shouldEqual Set("1.txt", "2.txt", "4.txt", "5.txt") // 5.txt has been staged, 6.txt is untracked
+      contents(dir) map (_.toString) shouldEqual Set("1.txt", "2.txt", "4.txt", "5.txt") // 5.txt has been staged, 6.txt is untracked
     }
   }
 
@@ -112,13 +113,14 @@ class GitSpec extends WordSpec with Matchers {
   def fixture(qualifier: String = "") =
     new {
       s"unzip -qo -d $tmpDir src/test/test-repo$qualifier.zip".!
-      val path = tmpDir / s"test-repo$qualifier"
-      val repository = (new FileRepositoryBuilder).setWorkTree(path).build()
+      val dir = tmpDir / s"test-repo$qualifier"
+      val repository = (new FileRepositoryBuilder).setWorkTree(dir).build()
       val git = new Git(repository)
     }
 
-  def contents(path: Path): Set[Path] = {
+  def contents(dir: File): Set[Path] = {
     var paths = Set.empty[Path]
+    val path = Paths.get(dir.toURI)
     Files.walkFileTree(path, new SimpleFileVisitor[Path] {
       override def preVisitDirectory(dir: Path, attrs: BasicFileAttributes): FileVisitResult =
         if (dir.getFileName.toString == ".git")

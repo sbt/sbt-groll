@@ -17,7 +17,6 @@
 package name.heikoseeberger
 
 import java.io.File
-import java.nio.file.{ Path, Paths }
 import org.eclipse.jgit.revwalk.RevCommit
 import sbt.{ BuildStructure, Extracted, Project, SettingKey, State, ThisProject }
 import sbt.complete.Parser
@@ -37,16 +36,13 @@ package object sbtgroll {
       (commit abbreviate 7).name
   }
 
-  implicit class PathOps(path: Path) {
-    def /(name: String): Path =
-      path resolve name
+  implicit class FileOps(file: File) {
+    def /(name: String): File =
+      new File(file, name)
   }
 
-  implicit def pathToFile(path: Path): File =
-    path.toFile
-
-  val tmpDir: Path =
-    Paths get System.getProperty("java.io.tmpdir", "/tmp")
+  val tmpDir: File =
+    new File(System.getProperty("java.io.tmpdir", "/tmp"))
 
   def fst[A, B](pair: (A, B)): A =
     pair._1
