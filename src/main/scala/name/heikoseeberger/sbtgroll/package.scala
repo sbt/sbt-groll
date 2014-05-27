@@ -16,6 +16,11 @@
 
 package name.heikoseeberger
 
+import java.io.File
+import org.eclipse.jgit.revwalk.RevCommit
+import sbt.{ BuildStructure, Extracted, Project, SettingKey, State, ThisProject }
+import sbt.complete.Parser
+
 package object sbtgroll {
 
   type Traversable[+A] = scala.collection.immutable.Traversable[A]
@@ -25,4 +30,42 @@ package object sbtgroll {
   type Seq[+A] = scala.collection.immutable.Seq[A]
 
   type IndexedSeq[+A] = scala.collection.immutable.IndexedSeq[A]
+
+  implicit class RevCommitOps(commit: RevCommit) {
+    def shortId: String =
+      (commit abbreviate 7).name
+  }
+
+  implicit class FileOps(file: File) {
+    def /(name: String): File =
+      new File(file, name)
+  }
+
+  val tmpDir: File =
+    new File(System.getProperty("java.io.tmpdir", "/tmp"))
+
+  def fst[A, B](pair: (A, B)): A =
+    pair._1
+
+  //  def arg(key: String): Parser[String] = {
+  //    import sbt.complete.DefaultParsers._
+  //    Space ~> key
+  //  }
+
+  //  def stringOpt(key: String): Parser[(String, String)] = {
+  //    import sbt.complete.DefaultParsers._
+  //    (Space ~> key ~ ("=" ~> charClass(_ => true).+)) map { case (k, v) => k -> v.mkString }
+  //  }
+
+  def setting[A](key: SettingKey[A], state: State): A =
+    key in ThisProject get structure(state).data getOrElse sys.error(s"$key undefined!")
+
+  //  def setting[A](key: SettingKey[A], default: A, state: State): A =
+  //    key in ThisProject get structure(state).data getOrElse default
+
+  def structure(state: State): BuildStructure =
+    extracted(state).structure
+
+  def extracted(state: State): Extracted =
+    Project extract state
 }
