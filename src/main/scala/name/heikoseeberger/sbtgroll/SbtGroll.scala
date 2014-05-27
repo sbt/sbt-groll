@@ -17,13 +17,13 @@
 package name.heikoseeberger.sbtgroll
 
 import java.io.File
-import sbt.{ Command, Keys, Plugin, Setting, SettingKey, State }
+import sbt.{ AutoPlugin, Command, Keys, Setting, SettingKey, State }
 import sbt.complete.Parser
 import scala.reflect.{ ClassTag, classTag }
 
-object SbtGroll extends Plugin {
+object SbtGroll extends AutoPlugin {
 
-  object GrollKey {
+  object autoImport {
 
     val configFile: SettingKey[File] =
       SettingKey[File](
@@ -46,12 +46,12 @@ object SbtGroll extends Plugin {
     private def prefixed(key: String) = "groll" + key.capitalize
   }
 
-  override def settings: Seq[Setting[_]] =
+  override def projectSettings: Seq[Setting[_]] =
     List(
       Keys.commands += grollCommand,
-      GrollKey.configFile := new File(System.getProperty("user.home"), ".sbt-groll.conf"),
-      GrollKey.historyRef := "master",
-      GrollKey.workingBranch := "groll"
+      autoImport.configFile := new File(System.getProperty("user.home"), ".sbt-groll.conf"),
+      autoImport.historyRef := "master",
+      autoImport.workingBranch := "groll"
     )
 
   private def grollCommand =

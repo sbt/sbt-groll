@@ -16,8 +16,8 @@
 
 package name.heikoseeberger.sbtgroll
 
+import SbtGroll.autoImport
 import com.typesafe.config.{ ConfigException, ConfigFactory }
-import SbtGroll.GrollKey
 import sbt.{ Keys, State }
 
 private object Groll {
@@ -33,11 +33,11 @@ private class Groll(state: State, grollArg: GrollArg) {
 
   val baseDirectory = setting(Keys.baseDirectory, state)
 
-  val configFile = setting(GrollKey.configFile, state)
+  val configFile = setting(autoImport.configFile, state)
 
-  val historyRef = setting(GrollKey.historyRef, state)
+  val historyRef = setting(autoImport.historyRef, state)
 
-  val workingBranch = setting(GrollKey.workingBranch, state)
+  val workingBranch = setting(autoImport.workingBranch, state)
 
   val git = Git(baseDirectory)
 
