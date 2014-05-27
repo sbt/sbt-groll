@@ -61,11 +61,11 @@ object SbtGroll extends Plugin {
     import GrollArg._
     import sbt.complete.DefaultParsers._
     def arg(koanArg: GrollArg): Parser[GrollArg] = {
-      (Space ~> koanArg.toString.toLowerCase) map (_ => koanArg)
+      (Space ~> koanArg.toString.decapitalize) map (_ => koanArg)
     }
     def stringOpt[A <: GrollArg: ClassTag](ctor: String => A): Parser[A] = {
       import sbt.complete.DefaultParsers._
-      val name = classTag[A].runtimeClass.getName
+      val name = classTag[A].runtimeClass.getSimpleName
       (Space ~> name.decapitalize ~> "=" ~> NotQuoted) map ctor
     }
     arg(Show) | arg(List) | arg(Next) | arg(Prev) | arg(Head) | arg(Initial) | stringOpt(Move) | arg(PushSolutions)
