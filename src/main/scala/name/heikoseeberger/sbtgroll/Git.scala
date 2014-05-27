@@ -22,6 +22,7 @@ import org.eclipse.jgit.api.ResetCommand.ResetType
 import org.eclipse.jgit.lib.Repository
 import org.eclipse.jgit.revwalk.{ RevCommit, RevWalk }
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder
+import org.eclipse.jgit.transport.{ CredentialsProvider, RefSpec, UsernamePasswordCredentialsProvider }
 import org.eclipse.jgit.treewalk.{ AbstractTreeIterator, CanonicalTreeParser }
 import scala.collection.JavaConversions._
 
@@ -60,12 +61,19 @@ class Git(repository: Repository) {
     command.call().toList map idAndMessage
   }
 
+  def pushHead(source: String, destination: String, username: String, password: String): Unit = {
+    val refSpec = new RefSpec(s"$source:$destination")
+    val command =
+      jgit.push() setRemote "origin-https" setRefSpecs refSpec setForce true setCredentialsProvider credentialsProvider(username, password)
+    command.call()
+  }
+
   def resetHard(): Unit = {
     val command = jgit.reset setMode ResetType.HARD
     command.call()
   }
 
-  private def idAndMessage(commit: RevCommit) =
+  private def idAndMessage(commit: RevCommit): (String, String) =
     commit.shortId -> commit.getShortMessage
 
   private def tree(ref: String): AbstractTreeIterator = {
@@ -81,4 +89,7 @@ class Git(repository: Repository) {
       parser
     } finally reader.release()
   }
+
+  private def credentialsProvider(username: String, password: String): CredentialsProvider =
+    new UsernamePasswordCredentialsProvider(username, password)
 }

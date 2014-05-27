@@ -31,12 +31,23 @@ package object sbtgroll {
 
   type IndexedSeq[+A] = scala.collection.immutable.IndexedSeq[A]
 
-  implicit class RevCommitOps(commit: RevCommit) {
+  implicit class StringOps(val s: String) extends AnyVal {
+    def decapitalize: String = {
+      if (s == null)
+        null
+      else if (s.isEmpty)
+        s
+      else
+        s.head.toLower +: s.tail
+    }
+  }
+
+  implicit class RevCommitOps(val commit: RevCommit) extends AnyVal {
     def shortId: String =
       (commit abbreviate 7).name
   }
 
-  implicit class FileOps(file: File) {
+  implicit class FileOps(val file: File) extends AnyVal {
     def /(name: String): File =
       new File(file, name)
   }

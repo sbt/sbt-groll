@@ -16,6 +16,7 @@
 
 package name.heikoseeberger.sbtgroll
 
+import java.io.File
 import sbt.{ Command, Keys, Plugin, Setting, SettingKey, State }
 import sbt.complete.Parser
 import scala.reflect.{ ClassTag, classTag }
@@ -23,6 +24,12 @@ import scala.reflect.{ ClassTag, classTag }
 object SbtGroll extends Plugin {
 
   object GrollKey {
+
+    val configFile: SettingKey[File] =
+      SettingKey[File](
+        prefixed("configFile"),
+        """The configuration file for sbt-groll; "~/.sbt-groll.conf" by default"""
+      )
 
     val historyRef: SettingKey[String] =
       SettingKey[String](
@@ -42,6 +49,7 @@ object SbtGroll extends Plugin {
   override def settings: Seq[Setting[_]] =
     List(
       Keys.commands += grollCommand,
+      GrollKey.configFile := new File(System.getProperty("user.home"), ".sbt-groll.conf"),
       GrollKey.historyRef := "master",
       GrollKey.workingBranch := "groll"
     )
@@ -58,8 +66,8 @@ object SbtGroll extends Plugin {
     def stringOpt[A <: GrollArg: ClassTag](ctor: String => A): Parser[A] = {
       import sbt.complete.DefaultParsers._
       val name = classTag[A].runtimeClass.getName
-      (Space ~> name.toLowerCase ~> "=" ~> NotQuoted) map ctor
+      (Space ~> name.decapitalize ~> "=" ~> NotQuoted) map ctor
     }
-    arg(Show) | arg(List) | arg(Next) | arg(Prev) | arg(Head) | arg(Initial) | stringOpt(Move)
+    arg(Show) | arg(List) | arg(Next) | arg(Prev) | arg(Head) | arg(Initial) | stringOpt(Move) | arg(PushSolutions)
   }
 }

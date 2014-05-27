@@ -16,6 +16,7 @@
 
 package name.heikoseeberger.sbtgroll
 
+import com.typesafe.config.{ ConfigException, ConfigFactory }
 import SbtGroll.GrollKey
 import sbt.{ Keys, State }
 
@@ -28,7 +29,11 @@ private class Groll(state: State, grollArg: GrollArg) {
 
   val buildDefinition = """.+sbt|project/.+\.scala""".r
 
+  val tag = """\d{8}-\w+-\w+""".r
+
   val baseDirectory = setting(Keys.baseDirectory, state)
+
+  val configFile = setting(GrollKey.configFile, state)
 
   val historyRef = setting(GrollKey.historyRef, state)
 
@@ -41,13 +46,26 @@ private class Groll(state: State, grollArg: GrollArg) {
   val history = git.history(historyRef)
 
   def apply(): State = {
+
     import GrollArg._
+
+    if (!(tag.pattern matcher historyRef).matches())
+      state.log.warn(s"""The value "$historyRef" for the historyRef setting is no valid CourseGen tag: You won't be able to push the solutions!""")
+
     grollArg match {
       case Show =>
         ifCurrentInHistory {
           state.log.info(s"== $currentId $currentMessage")
           state
         }
+      case List =>
+        for ((id, message) <- history) {
+          if (id == currentId)
+            state.log.info(s"== $id $message")
+          else
+            state.log.info(s"   $id $message")
+        }
+        state
       case Next =>
         ifCurrentInHistory {
           groll(
@@ -82,6 +100,23 @@ private class Groll(state: State, grollArg: GrollArg) {
           s"""Already at "$id"""",
           (id, message) => s"<> $id $message"
         )
+      case PushSolutions =>
+        if (!(tag.pattern matcher historyRef).matches())
+          state.log.error(s"""The value "$historyRef" for the historyRef setting is no valid CourseGen tag!""")
+        else if (!configFile.exists())
+          state.log.error(s"""Configuration file "$configFile" not found!""")
+        else {
+          try {
+            val config = ConfigFactory.parseFile(configFile)
+            val username = config getString "username"
+            val password = config getString "password"
+            git.pushHead(workingBranch, s"$historyRef-solutions", username, password)
+            state.log.info("""Pushed solutions to branch s"$historyRef-solutions"""")
+          } catch {
+            case e: ConfigException => state.log.error(s"""Could not read username and password from configuration file "$configFile"!""")
+          }
+        }
+        state
     }
   }
 

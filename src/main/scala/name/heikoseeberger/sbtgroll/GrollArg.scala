@@ -16,7 +16,7 @@
 
 package name.heikoseeberger.sbtgroll
 
-private trait GrollArg
+private sealed trait GrollArg
 
 private object GrollArg {
 
@@ -33,4 +33,6 @@ private object GrollArg {
   case object Initial extends GrollArg
 
   case class Move(id: String) extends GrollArg
+
+  case object PushSolutions extends GrollArg
 }
