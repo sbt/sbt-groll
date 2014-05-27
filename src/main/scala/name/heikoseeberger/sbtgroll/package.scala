@@ -58,21 +58,8 @@ package object sbtgroll {
   def fst[A, B](pair: (A, B)): A =
     pair._1
 
-  //  def arg(key: String): Parser[String] = {
-  //    import sbt.complete.DefaultParsers._
-  //    Space ~> key
-  //  }
-
-  //  def stringOpt(key: String): Parser[(String, String)] = {
-  //    import sbt.complete.DefaultParsers._
-  //    (Space ~> key ~ ("=" ~> charClass(_ => true).+)) map { case (k, v) => k -> v.mkString }
-  //  }
-
   def setting[A](key: SettingKey[A], state: State): A =
     key in ThisProject get structure(state).data getOrElse sys.error(s"$key undefined!")
-
-  //  def setting[A](key: SettingKey[A], default: A, state: State): A =
-  //    key in ThisProject get structure(state).data getOrElse default
 
   def structure(state: State): BuildStructure =
     extracted(state).structure
