@@ -111,7 +111,7 @@ private class Groll(state: State, grollArg: GrollArg) {
             val username = config getString "username"
             val password = config getString "password"
             git.pushHead(workingBranch, s"$historyRef-solutions", username, password)
-            state.log.info("""Pushed solutions to branch s"$historyRef-solutions"""")
+            state.log.info(s"""Pushed solutions to branch s"$historyRef-solutions"""")
           } catch {
             case e: ConfigException => state.log.error(s"""Could not read username and password from configuration file "$configFile"!""")
           }
