@@ -17,7 +17,7 @@
 package name.heikoseeberger.sbtgroll
 
 import java.io.File
-import sbt.{ AutoPlugin, Command, Keys, Setting, SettingKey, State }
+import sbt.{ AutoPlugin, Command, Keys, PluginTrigger, Setting, SettingKey, State }
 import sbt.complete.Parser
 import scala.reflect.{ ClassTag, classTag }
 
@@ -53,6 +53,9 @@ object SbtGroll extends AutoPlugin {
       autoImport.historyRef := "master",
       autoImport.workingBranch := "groll"
     )
+
+  override def trigger: PluginTrigger =
+    allRequirements
 
   private def grollCommand =
     Command("groll")(parser)(Groll.apply)
