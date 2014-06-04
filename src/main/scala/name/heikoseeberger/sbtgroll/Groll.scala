@@ -19,6 +19,7 @@ package name.heikoseeberger.sbtgroll
 import SbtGroll.autoImport
 import com.typesafe.config.{ ConfigException, ConfigFactory }
 import sbt.{ Keys, State }
+import org.eclipse.jgit.api.errors.GitAPIException
 
 private object Groll {
   def apply(state: State, grollArg: GrollArg): State =
@@ -28,8 +29,6 @@ private object Groll {
 private class Groll(state: State, grollArg: GrollArg) {
 
   val buildDefinition = """.+sbt|project/.+\.scala""".r
-
-  val tag = """\d{8}-\w+-\w+""".r
 
   val baseDirectory = setting(Keys.baseDirectory, state)
 
@@ -43,86 +42,88 @@ private class Groll(state: State, grollArg: GrollArg) {
 
   val (currentId, currentMessage) = git.current()
 
-  val history = git.history(historyRef)
-
   def apply(): State = {
 
     import GrollArg._
 
-    if (!(tag.pattern matcher historyRef).matches())
-      state.log.warn(s"""The value "$historyRef" for the historyRef setting is no valid CourseGen tag: You won't be able to push the solutions!""")
-
-    grollArg match {
-      case Show =>
-        ifCurrentInHistory {
-          state.log.info(s"== $currentId $currentMessage")
+    if (!git.existsRef(historyRef)) {
+      state.log.error(s"""There's no "$historyRef" tag or branch as defined with the `GrollKey.historyRef` setting!""")
+      state
+    } else {
+      val history = git.history(historyRef)
+      grollArg match {
+        case Show =>
+          ifCurrentInHistory(history) {
+            state.log.info(s"== $currentId $currentMessage")
+            state
+          }
+        case List =>
+          for ((id, message) <- history) {
+            if (id == currentId)
+              state.log.info(s"== $id $message")
+            else
+              state.log.info(s"   $id $message")
+          }
           state
-        }
-      case List =>
-        for ((id, message) <- history) {
-          if (id == currentId)
-            state.log.info(s"== $id $message")
-          else
-            state.log.info(s"   $id $message")
-        }
-        state
-      case Next =>
-        ifCurrentInHistory {
+        case Next =>
+          ifCurrentInHistory(history) {
+            groll(
+              (history takeWhile { case (id, _) => id != currentId }).lastOption,
+              "Already at the head of the commit history!",
+              (id, message) => s">> $id $message"
+            )
+          }
+        case Prev =>
+          ifCurrentInHistory(history) {
+            groll(
+              (history dropWhile { case (id, _) => id != currentId }).tail.headOption,
+              "Already at the first commit!",
+              (id, message) => s"<< $id $message"
+            )
+          }
+        case Head =>
           groll(
-            (history takeWhile { case (id, _) => id != currentId }).lastOption,
+            if (currentId == history.head._1) None else Some(history.head),
             "Already at the head of the commit history!",
             (id, message) => s">> $id $message"
           )
-        }
-      case Prev =>
-        ifCurrentInHistory {
+        case Initial =>
           groll(
-            (history dropWhile { case (id, _) => id != currentId }).tail.headOption,
-            "Already at the first commit!",
+            history find { case (_, message) => message startsWith "Initial state" },
+            """There's no commit with a message starting with "Initial state"!""",
             (id, message) => s"<< $id $message"
           )
-        }
-      case Head =>
-        groll(
-          if (currentId == history.head._1) None else Some(history.head),
-          "Already at the head of the commit history!",
-          (id, message) => s">> $id $message"
-        )
-      case Initial =>
-        groll(
-          history find { case (_, message) => message startsWith "Initial state" },
-          """There's no commit with a message starting with "Initial state"!""",
-          (id, message) => s"<< $id $message"
-        )
-      case (Move(id)) =>
-        groll(
-          if (currentId == id) None else Some(id -> history.toMap.getOrElse(id, "")),
-          s"""Already at "$id"""",
-          (id, message) => s"<> $id $message"
-        )
-      case PushSolutions =>
-        if (!(tag.pattern matcher historyRef).matches())
-          state.log.error(s"""The value "$historyRef" for the historyRef setting is no valid CourseGen tag!""")
-        else if (!configFile.exists())
-          state.log.error(s"""Configuration file "$configFile" not found!""")
-        else {
-          try {
-            val config = ConfigFactory.parseFile(configFile)
-            val username = config getString "username"
-            val password = config getString "password"
-            git.pushHead(workingBranch, s"$historyRef-solutions", username, password)
-            state.log.info(s"""Pushed solutions to branch s"$historyRef-solutions"""")
-          } catch {
-            case e: ConfigException => state.log.error(s"""Could not read username and password from configuration file "$configFile"!""")
+        case (Move(id)) =>
+          groll(
+            if (currentId == id) None else Some(id -> history.toMap.getOrElse(id, "")),
+            s"""Already at "$id"""",
+            (id, message) => s"<> $id $message"
+          )
+        case PushSolutions =>
+          if (!configFile.exists())
+            state.log.error(s"""Configuration file "$configFile" not found!""")
+          else if (!git.existsRef(workingBranch))
+            state.log.warn(s"""There's no working branch "$workingBranch": Have you used `groll initial`?""")
+          else {
+            try {
+              val config = ConfigFactory.parseFile(configFile)
+              val username = config getString "username"
+              val password = config getString "password"
+              git.pushHead(workingBranch, s"$historyRef-solutions", username, password)
+              state.log.info(s"""Pushed solutions to branch s"$historyRef-solutions"""")
+            } catch {
+              case e: ConfigException => state.log.error(s"""Could not read username and password from configuration file "$configFile"!""")
+              case e: GitAPIException => state.log.error(s"Git error: ${e.getMessage}")
+            }
           }
-        }
-        state
+          state
+      }
     }
   }
 
-  def ifCurrentInHistory(block: => State): State = {
+  def ifCurrentInHistory(history: Seq[(String, String)])(block: => State): State = {
     if (!(history map fst contains currentId)) {
-      state.log.warn(s"""Current commit "$currentId" is not part of the history defined by "$historyRef": Use "head", "initial" or "move"!""")
+      state.log.warn(s"""Current commit "$currentId" is not within the history defined by "$historyRef": Use "head", "initial" or "move"!""")
       state
     } else
       block

@@ -69,6 +69,15 @@ class GitSpec extends WordSpec with Matchers {
     }
   }
 
+  "Calling Git.existsBranch" should {
+    "return true for master and false for foo" in {
+      val f = fixture()
+      import f._
+      git.existsRef("master") shouldBe true
+      git.existsRef("none") shouldBe false
+    }
+  }
+
   "Calling Git.history" should {
     "return the correct history" in {
       val f = fixture()

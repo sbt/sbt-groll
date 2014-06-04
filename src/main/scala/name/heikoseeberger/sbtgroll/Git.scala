@@ -56,6 +56,9 @@ class Git(repository: Repository) {
     command.call().toList map (_.getNewPath)
   }
 
+  def existsRef(ref: String): Boolean =
+    repository.resolve(ref) != null
+
   def history(ref: String = "master"): Seq[(String, String)] = {
     val command = jgit.log add repository.resolve(ref)
     command.call().toList map idAndMessage
