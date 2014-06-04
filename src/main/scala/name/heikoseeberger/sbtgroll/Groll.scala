@@ -47,7 +47,7 @@ private class Groll(state: State, grollArg: GrollArg) {
     import GrollArg._
 
     if (!git.existsRef(historyRef)) {
-      state.log.error(s"""There's no "$historyRef" tag or branch as defined with the `GrollKey.historyRef` setting!""")
+      state.log.error(s"""There's no "$historyRef" tag or branch as defined with the `GrollKey.autoImport.historyRef` setting!""")
       state
     } else {
       val history = git.history(historyRef)
@@ -110,7 +110,7 @@ private class Groll(state: State, grollArg: GrollArg) {
               val username = config getString "username"
               val password = config getString "password"
               git.pushHead(workingBranch, s"$historyRef-solutions", username, password)
-              state.log.info(s"""Pushed solutions to branch s"$historyRef-solutions"""")
+              state.log.info(s"""Pushed solutions to branch "$historyRef-solutions"""")
             } catch {
               case e: ConfigException => state.log.error(s"""Could not read username and password from configuration file "$configFile"!""")
               case e: GitAPIException => state.log.error(s"Git error: ${e.getMessage}")
