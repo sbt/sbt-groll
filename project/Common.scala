@@ -18,8 +18,12 @@ object Common {
         "-unchecked",
         "-deprecation",
         "-language:_",
-        "-target:jvm-1.7",
+        "-target:jvm-1.6",
         "-encoding", "UTF-8"
+      ),
+      javacOptions ++= List(
+        "-source", "1.6",
+        "-target", "1.6"
       ),
       unmanagedSourceDirectories in Compile := List((scalaSource in Compile).value),
       unmanagedSourceDirectories in Test := List((scalaSource in Test).value),
