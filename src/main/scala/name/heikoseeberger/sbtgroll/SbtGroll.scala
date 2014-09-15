@@ -17,8 +17,8 @@
 package name.heikoseeberger.sbtgroll
 
 import java.io.File
-import sbt.{ AutoPlugin, Command, Keys, PluginTrigger, Setting, SettingKey, State }
 import sbt.complete.Parser
+import sbt.{ AutoPlugin, Command, Keys, PluginTrigger, Setting, SettingKey, State }
 import scala.reflect.{ ClassTag, classTag }
 
 object SbtGroll extends AutoPlugin {
@@ -43,7 +43,7 @@ object SbtGroll extends AutoPlugin {
         """The working branch used by sbt-groll; "groll" by default"""
       )
 
-    private def prefixed(key: String) = "groll" + key.capitalize
+    private def prefixed(key: String) = s"groll${key.capitalize}"
   }
 
   override def projectSettings: Seq[Setting[_]] =
@@ -64,12 +64,11 @@ object SbtGroll extends AutoPlugin {
     import GrollArg._
     import sbt.complete.DefaultParsers._
     def arg(koanArg: GrollArg): Parser[GrollArg] = {
-      (Space ~> koanArg.toString.decapitalize) map (_ => koanArg)
+      (Space ~> koanArg.toString.decapitalize).map(_ => koanArg)
     }
     def stringOpt[A <: GrollArg: ClassTag](ctor: String => A): Parser[A] = {
-      import sbt.complete.DefaultParsers._
       val name = classTag[A].runtimeClass.getSimpleName
-      (Space ~> name.decapitalize ~> "=" ~> NotQuoted) map ctor
+      (Space ~> name.decapitalize ~> "=" ~> NotQuoted).map(ctor)
     }
     arg(Show) | arg(List) | arg(Next) | arg(Prev) | arg(Head) | arg(Initial) | stringOpt(Move) | arg(PushSolutions)
   }
