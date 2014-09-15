@@ -33,10 +33,11 @@ object Common {
       publishMavenStyle := false,
       // Scalariform settings
       ScalariformKeys.preferences := ScalariformKeys.preferences.value
+        .setPreference(AlignArguments, true)
+        .setPreference(AlignParameters, true)
         .setPreference(AlignSingleLineCaseStatements, true)
         .setPreference(AlignSingleLineCaseStatements.MaxArrowIndent, 100)
-        .setPreference(DoubleIndentClassDeclaration, true)
-        .setPreference(PreserveDanglingCloseParenthesis, true),
+        .setPreference(DoubleIndentClassDeclaration, true),
       // Release settings
       ReleaseKeys.versionBump := sbtrelease.Version.Bump.Minor
     )

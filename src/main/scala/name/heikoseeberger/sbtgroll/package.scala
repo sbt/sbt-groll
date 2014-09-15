@@ -59,7 +59,7 @@ package object sbtgroll {
     pair._1
 
   def setting[A](key: SettingKey[A], state: State): A =
-    key in ThisProject get structure(state).data getOrElse sys.error(s"$key undefined!")
+    key in extracted(state).currentRef get structure(state).data getOrElse sys.error(s"$key undefined!")
 
   def structure(state: State): BuildStructure =
     extracted(state).structure
