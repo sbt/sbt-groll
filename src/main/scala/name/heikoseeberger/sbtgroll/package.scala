@@ -19,7 +19,6 @@ package name.heikoseeberger
 import java.io.File
 import org.eclipse.jgit.revwalk.RevCommit
 import sbt.{ BuildStructure, Extracted, Project, SettingKey, State, ThisProject }
-import sbt.complete.Parser
 
 package object sbtgroll {
 
@@ -44,7 +43,7 @@ package object sbtgroll {
 
   implicit class RevCommitOps(val commit: RevCommit) extends AnyVal {
     def shortId: String =
-      (commit abbreviate 7).name
+      commit.abbreviate(7).name
   }
 
   implicit class FileOps(val file: File) extends AnyVal {
@@ -59,11 +58,11 @@ package object sbtgroll {
     pair._1
 
   def setting[A](key: SettingKey[A], state: State): A =
-    key in ThisProject get structure(state).data getOrElse sys.error(s"$key undefined!")
+    key.in(ThisProject).get(structure(state).data).getOrElse(sys.error(s"$key undefined!"))
 
   def structure(state: State): BuildStructure =
     extracted(state).structure
 
   def extracted(state: State): Extracted =
-    Project extract state
+    Project.extract(state)
 }

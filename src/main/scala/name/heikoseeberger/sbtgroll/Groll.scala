@@ -18,12 +18,12 @@ package name.heikoseeberger.sbtgroll
 
 import SbtGroll.autoImport
 import com.typesafe.config.{ ConfigException, ConfigFactory }
-import sbt.{ Keys, State }
 import org.eclipse.jgit.api.errors.GitAPIException
+import sbt.{ Keys, State }
 
 private object Groll {
   def apply(state: State, grollArg: GrollArg): State =
-    new Groll(state, grollArg)()
+    new Groll(state, grollArg).apply()
 }
 
 private class Groll(state: State, grollArg: GrollArg) {
@@ -68,7 +68,7 @@ private class Groll(state: State, grollArg: GrollArg) {
         case Next =>
           ifCurrentInHistory(history) {
             groll(
-              (history takeWhile { case (id, _) => id != currentId }).lastOption,
+              history.takeWhile { case (id, _) => id != currentId }.lastOption,
               "Already at the head of the commit history!",
               (id, message) => s">> $id $message"
             )
@@ -76,26 +76,32 @@ private class Groll(state: State, grollArg: GrollArg) {
         case Prev =>
           ifCurrentInHistory(history) {
             groll(
-              (history dropWhile { case (id, _) => id != currentId }).tail.headOption,
+              history.dropWhile { case (id, _) => id != currentId }.tail.headOption,
               "Already at the first commit!",
               (id, message) => s"<< $id $message"
             )
           }
         case Head =>
           groll(
-            if (currentId == history.head._1) None else Some(history.head),
+            if (currentId == history.head._1)
+              None
+            else
+              Some(history.head),
             "Already at the head of the commit history!",
             (id, message) => s">> $id $message"
           )
         case Initial =>
           groll(
-            history find { case (_, message) => message startsWith "Initial state" },
+            history.find { case (_, message) => message startsWith "Initial state" },
             """There's no commit with a message starting with "Initial state"!""",
             (id, message) => s"<< $id $message"
           )
         case (Move(id)) =>
           groll(
-            if (currentId == id) None else Some(id -> history.toMap.getOrElse(id, "")),
+            if (currentId == id)
+              None
+            else
+              Some(id -> history.toMap.getOrElse(id, "")),
             s"""Already at "$id"""",
             (id, message) => s"<> $id $message"
           )
@@ -107,8 +113,8 @@ private class Groll(state: State, grollArg: GrollArg) {
           else {
             try {
               val config = ConfigFactory.parseFile(configFile)
-              val username = config getString "username"
-              val password = config getString "password"
+              val username = config.getString("username")
+              val password = config.getString("password")
               git.pushHead(workingBranch, s"$historyRef-solutions", username, password)
               state.log.info(s"""Pushed solutions to branch "$historyRef-solutions"""")
             } catch {
@@ -121,12 +127,12 @@ private class Groll(state: State, grollArg: GrollArg) {
     }
   }
 
-  def ifCurrentInHistory(history: Seq[(String, String)])(block: => State): State = {
-    if (!(history map fst contains currentId)) {
+  def ifCurrentInHistory(history: Seq[(String, String)])(action: => State): State = {
+    if (!history.map(fst).contains(currentId)) {
       state.log.warn(s"""Current commit "$currentId" is not within the history defined by "$historyRef": Use "head", "initial" or "move"!""")
       state
     } else
-      block
+      action
   }
 
   def groll(idAndMessage: Option[(String, String)], warn: => String, info: (String, String) => String): State =
@@ -139,7 +145,7 @@ private class Groll(state: State, grollArg: GrollArg) {
         git.clean()
         git.checkout(id, workingBranch)
         state.log.info(info(id, message))
-        if (git.diff(id, currentId) exists (s => buildDefinition.pattern.matcher(s).matches))
+        if (git.diff(id, currentId).exists(s => buildDefinition.pattern.matcher(s).matches))
           state.reload
         else
           state

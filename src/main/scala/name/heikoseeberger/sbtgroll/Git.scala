@@ -17,8 +17,8 @@
 package name.heikoseeberger.sbtgroll
 
 import java.io.File
-import org.eclipse.jgit.api.{ Git => JGit }
 import org.eclipse.jgit.api.ResetCommand.ResetType
+import org.eclipse.jgit.api.{ Git => JGit }
 import org.eclipse.jgit.lib.Repository
 import org.eclipse.jgit.revwalk.{ RevCommit, RevWalk }
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder
@@ -36,45 +36,63 @@ class Git(repository: Repository) {
   private val jgit = new JGit(repository)
 
   def checkout(ref: String, branch: String): Unit = {
-    (jgit.checkout setName "master").call()
-    (jgit.branchDelete setBranchNames branch setForce true).call()
-    (jgit.checkout setName branch setStartPoint ref setCreateBranch true).call()
+    jgit.checkout
+      .setName("master")
+      .call()
+    jgit.branchDelete
+      .setBranchNames(branch)
+      .setForce(true)
+      .call()
+    jgit.checkout
+      .setName(branch)
+      .setStartPoint(ref)
+      .setCreateBranch(true)
+      .call()
   }
 
-  def clean(): Unit = {
-    val command = jgit.clean setCleanDirectories true setIgnore true
-    command.call()
-  }
+  def clean(): Unit =
+    jgit.clean
+      .setCleanDirectories(true)
+      .setIgnore(true)
+      .call()
 
-  def current(): (String, String) = {
-    val command = jgit.log setMaxCount 1
-    command.call().toList map idAndMessage head
-  }
+  def current(): (String, String) =
+    jgit.log
+      .setMaxCount(1)
+      .call()
+      .map(idAndMessage)
+      .head
 
-  def diff(newRef: String, oldRef: String): Seq[String] = {
-    val command = jgit.diff setNewTree tree(newRef) setOldTree tree(oldRef)
-    command.call().toList map (_.getNewPath)
-  }
+  def diff(newRef: String, oldRef: String): Seq[String] =
+    jgit.diff
+      .setNewTree(tree(newRef))
+      .setOldTree(tree(oldRef))
+      .call()
+      .toList
+      .map(_.getNewPath)
 
   def existsRef(ref: String): Boolean =
     repository.resolve(ref) != null
 
-  def history(ref: String = "master"): Seq[(String, String)] = {
-    val command = jgit.log add repository.resolve(ref)
-    command.call().toList map idAndMessage
-  }
+  def history(ref: String = "master"): Seq[(String, String)] =
+    jgit.log
+      .add(repository.resolve(ref))
+      .call()
+      .toList
+      .map(idAndMessage)
 
-  def pushHead(source: String, destination: String, username: String, password: String): Unit = {
-    val refSpec = new RefSpec(s"$source:$destination")
-    val command =
-      jgit.push() setRemote "origin-https" setRefSpecs refSpec setForce true setCredentialsProvider credentialsProvider(username, password)
-    command.call()
-  }
+  def pushHead(source: String, destination: String, username: String, password: String): Unit =
+    jgit.push()
+      .setRemote("origin-https")
+      .setRefSpecs(new RefSpec(s"$source:$destination"))
+      .setForce(true)
+      .setCredentialsProvider(credentialsProvider(username, password))
+      .call()
 
-  def resetHard(): Unit = {
-    val command = jgit.reset setMode ResetType.HARD
-    command.call()
-  }
+  def resetHard(): Unit =
+    jgit.reset
+      .setMode(ResetType.HARD)
+      .call()
 
   private def idAndMessage(commit: RevCommit): (String, String) =
     commit.shortId -> commit.getShortMessage
@@ -90,7 +108,8 @@ class Git(repository: Repository) {
     try {
       parser.reset(reader, tree.getId)
       parser
-    } finally reader.release()
+    } finally
+      reader.release()
   }
 
   private def credentialsProvider(username: String, password: String): CredentialsProvider =
