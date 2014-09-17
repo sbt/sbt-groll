@@ -19,7 +19,7 @@ package name.heikoseeberger.sbtgroll
 import SbtGroll.autoImport
 import com.typesafe.config.{ ConfigException, ConfigFactory }
 import org.eclipse.jgit.api.errors.GitAPIException
-import sbt.{ Keys, State }
+import sbt.{ Keys, Project, State }
 
 private object Groll {
   def apply(state: State, grollArg: GrollArg): State =
@@ -30,13 +30,13 @@ private class Groll(state: State, grollArg: GrollArg) {
 
   val buildDefinition = """.+sbt|project/.+\.scala""".r
 
-  val baseDirectory = setting(Keys.baseDirectory, state)
+  val baseDirectory = Project.extract(state).get(Keys.baseDirectory)
 
-  val configFile = setting(autoImport.configFile, state)
+  val configFile = Project.extract(state).get(autoImport.configFile)
 
-  val historyRef = setting(autoImport.historyRef, state)
+  val historyRef = Project.extract(state).get(autoImport.historyRef)
 
-  val workingBranch = setting(autoImport.workingBranch, state)
+  val workingBranch = Project.extract(state).get(autoImport.workingBranch)
 
   val git = Git(baseDirectory)
 

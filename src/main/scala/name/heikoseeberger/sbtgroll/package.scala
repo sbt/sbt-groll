@@ -18,7 +18,6 @@ package name.heikoseeberger
 
 import java.io.File
 import org.eclipse.jgit.revwalk.RevCommit
-import sbt.{ BuildStructure, Extracted, Project, SettingKey, State, ThisProject }
 
 package object sbtgroll {
 
@@ -56,13 +55,4 @@ package object sbtgroll {
 
   def fst[A, B](pair: (A, B)): A =
     pair._1
-
-  def setting[A](key: SettingKey[A], state: State): A =
-    key.in(extracted(state).currentRef).get(structure(state).data).getOrElse(sys.error(s"$key undefined!"))
-
-  def structure(state: State): BuildStructure =
-    extracted(state).structure
-
-  def extracted(state: State): Extracted =
-    Project.extract(state)
 }
