@@ -13,7 +13,7 @@ object Common {
     buildInfoSettings ++
     List(
       // Core settings
-      organization := "name.heikoseeberger",
+      organization := "de.heikoseeberger",
       scalaVersion := Version.scala,
       crossScalaVersions := List(scalaVersion.value),
       scalacOptions ++= List(
@@ -44,6 +44,6 @@ object Common {
       ReleaseKeys.versionBump := sbtrelease.Version.Bump.Minor,
       // BuildInfo settings
       sourceGenerators in Compile <+= buildInfo,
-      buildInfoPackage := "name.heikoseeberger.sbtgroll"
+      buildInfoPackage := s"${organization.value}.sbtgroll"
     )
 }

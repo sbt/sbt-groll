@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package name.heikoseeberger.sbtgroll
+package de.heikoseeberger.sbtgroll
 
 import java.io.File
 import java.nio.file.{ FileVisitResult, Files, Path, Paths, SimpleFileVisitor }

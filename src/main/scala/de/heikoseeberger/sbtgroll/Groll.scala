@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package name.heikoseeberger.sbtgroll
+package de.heikoseeberger.sbtgroll
 
 import SbtGroll.autoImport
 import com.typesafe.config.{ ConfigException, ConfigFactory }

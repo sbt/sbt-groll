@@ -6,4 +6,4 @@ Common.settings
 
 libraryDependencies ++= Dependencies.sbtGroll
 
-initialCommands := """|import name.heikoseeberger.sbtgroll._""".stripMargin
+initialCommands := """|import de.heikoseeberger.sbtgroll._""".stripMargin

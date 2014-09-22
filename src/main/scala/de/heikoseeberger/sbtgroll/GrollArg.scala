@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package name.heikoseeberger.sbtgroll
+package de.heikoseeberger.sbtgroll
 
 private sealed trait GrollArg
 
