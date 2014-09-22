@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package name.heikoseeberger
+package de.heikoseeberger
 
 import java.io.File
 import org.eclipse.jgit.revwalk.RevCommit
