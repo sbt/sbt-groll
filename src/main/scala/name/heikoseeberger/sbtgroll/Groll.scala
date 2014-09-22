@@ -123,6 +123,9 @@ private class Groll(state: State, grollArg: GrollArg) {
             }
           }
           state
+        case Version =>
+          state.log.info(BuildInfo.version)
+          state
       }
     }
   }
