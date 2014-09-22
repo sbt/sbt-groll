@@ -70,6 +70,6 @@ object SbtGroll extends AutoPlugin {
       val name = classTag[A].runtimeClass.getSimpleName
       (Space ~> name.decapitalize ~> "=" ~> NotQuoted).map(ctor)
     }
-    arg(Show) | arg(List) | arg(Next) | arg(Prev) | arg(Head) | arg(Initial) | stringOpt(Move) | arg(PushSolutions)
+    arg(Show) | arg(List) | arg(Next) | arg(Prev) | arg(Head) | arg(Initial) | stringOpt(Move) | arg(PushSolutions) | arg(Version)
   }
 }
