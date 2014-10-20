@@ -92,8 +92,8 @@ private class Groll(state: State, grollArg: GrollArg) {
           )
         case Initial =>
           groll(
-            history.find { case (_, message) => message startsWith "Initial state" },
-            """There's no commit with a message starting with "Initial state"!""",
+            history.find { case (_, message) => message.contains("groll:initial") || message.startsWith("Initial state") },
+            """There's no commit with a message containing "groll:initial" or starting with "Initial state"!""",
             (id, message) => s"<< $id $message"
           )
         case (Move(id)) =>

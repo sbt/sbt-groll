@@ -48,7 +48,7 @@ The `groll` command must be followed by one of the following options:
 - `next`: Moves to the next commit
 - `prev`: Moves to the previous commit
 - `head`: Moves to the head of the commit history
-- `initial`: Moves to a commit with a message starting with "Initial state"
+- `initial`: Moves to a commit with a message containing "groll:initial" or starting with "Initial state"
 - `move=<commit>`: Moves to the given commit
 - `pushSolutions`: Pushes the current commit to the "origin" remote repository under the branch `s"$historyRef-solutions"`, but only if `historyRef` matches the regex pattern `\d{8}-\w+-\w+
 - `version`: Shows the version of sbt-groll

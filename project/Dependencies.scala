@@ -12,14 +12,3 @@ object Library {
   val jGit      = "org.eclipse.jgit" % "org.eclipse.jgit" % Version.jGit
   val scalaTest = "org.scalatest"    %% "scalatest"       % Version.scalaTest
 }
-
-object Dependencies {
-
-  import Library._
-
-  val sbtGroll = List(
-    config,
-    jGit,
-    scalaTest % "test"
-  )
-}

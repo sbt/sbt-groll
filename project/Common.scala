@@ -5,9 +5,15 @@ import sbtbuildinfo.Plugin._
 import sbtrelease.ReleasePlugin._
 import scalariform.formatter.preferences._
 
-object Common {
+object Build extends AutoPlugin {
 
-  val settings =
+  override def requires =
+    plugins.JvmPlugin
+
+  override def trigger =
+    allRequirements
+
+  override def projectSettings =
     scalariformSettings ++
     releaseSettings ++
     buildInfoSettings ++

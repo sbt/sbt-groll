@@ -2,8 +2,10 @@ lazy val sbtGroll = project in file(".")
 
 name := "sbt-groll"
 
-Common.settings
-
-libraryDependencies ++= Dependencies.sbtGroll
+libraryDependencies ++= List(
+  Library.config,
+  Library.jGit,
+  Library.scalaTest % "test"
+)
 
 initialCommands := """|import de.heikoseeberger.sbtgroll._""".stripMargin
