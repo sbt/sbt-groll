@@ -1,4 +1,4 @@
-lazy val sbtGroll = project in file(".")
+lazy val sbtGroll = project.in(file("."))
 
 name := "sbt-groll"
 
