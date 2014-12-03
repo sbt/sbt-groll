@@ -6,9 +6,9 @@ Plugin for [sbt](http://www.scala-sbt.org) to "roll" – view and navigate – t
 
 sbt-groll is a plugin for sbt 0.13.7 or higher. In order to install sbt, please refer to the [sbt documentation](http://www.scala-sbt.org/release/docs/Getting-Started/Setup.html). Please make sure that you are using a suitable version of sbt:
 
-As sbt-groll is a plugin for sbt, it is installed like any other sbt plugin, that is by mere configuration: just add sbt-groll to your global or local plugin definition. Global plugins are defined in `~/.sbt/<SBT_VERSION>/plugins/plugins.sbt` and local plugins are defined in `project/plugins.sbt` in your project.
+As sbt-groll is a plugin for sbt, it is installed like any other sbt plugin, that is by mere configuration: just add sbt-groll to your global or local plugin definition. Global plugins are defined in `~/.sbt/<sbt_version>/plugins/plugins.sbt` and local plugins are defined in `project/plugins.sbt` in your project.
 
-In order to add sbt-groll as a plugin, just add the below setting to the relevant plugin definition, paying attention to blank lines between settings:
+In order to add sbt-groll as a plugin, just add the below setting to the relevant plugin definition:
 
 ```
 addSbtPlugin("de.heikoseeberger" % "sbt-groll" % "4.3.0")
@@ -18,11 +18,11 @@ After adding the sbt-groll plugin like this, you should either start sbt or, if 
 
 ## Using sbt-groll ##
 
-sbt-groll adds the `groll` command that provides various options to view and navigate the Git history. Of course this means, that you can only use sbt-groll for projects which are using Git as version control system.
+sbt-groll adds the `groll` command that provides various ways to view and navigate the Git history. Of course this means, that you can only use sbt-groll for projects which are using Git as version control system.
 
-If you navigate the Git history, i.e. move to some commit, sbt-groll reloads the sbt session if the build definition changes.
+If you navigate the Git history, i.e. move to some commit, sbt-groll reloads the sbt session if the build definition changes, i.e. any `.sbt` file in the project root directory or any `.scala` or `.sbt` file in the `project/` directory.
 
-In order to use sbt-groll, just execute `groll` in an sbt session, giving one of the options described below:
+In order to use sbt-groll, just execute `groll <arg_or_opt>` in an sbt session, giving one of the arguments or options described below. Here are two examples:
 
 ```
 > groll show
@@ -35,23 +35,23 @@ In order to use sbt-groll, just execute `groll` in an sbt session, giving one of
 
 sbt-groll can be configured by the following settings:
 
-- `configFile java.io.File`: The configuration file for sbt-groll; "~/.sbt-groll.conf" by default
-- `historyRef: String`: The ref (commit id, branch or tag) used for the Git history; "master" by default
-- `workingBranch: String`: The working branch used by sbt-groll; "groll" by default
+- `configFile: java.io.File` – the configuration file for sbt-groll; "~/.sbt-groll.conf" by default
+- `historyRef: String` – the ref (commit id, branch or tag) used for the Git history; "master" by default
+- `workingBranch: String` – the working branch used by sbt-groll; "groll" by default
 
-## Options ##
+## Arguments/options ##
 
-The `groll` command must be followed by one of the following options:
+The `groll` command must be followed by one of the following arguments or options:
 
-- `show`: Shows the current commit id and message, if current commit is in history
-- `list`: Shows the full commit history
-- `next`: Moves to the next commit
-- `prev`: Moves to the previous commit
-- `head`: Moves to the head of the commit history
-- `initial`: Moves to a commit with a message containing "groll:initial" or starting with "Initial state"
-- `move=<commit>`: Moves to the given commit
-- `push=<branch>`: Pushes the current commit via HTTPS to the "origin-https" remote repository (needs to be defined!) under the given branch
-- `version`: Shows the version of sbt-groll
+- `show` – shows the current commit id and message, if current commit is in history
+- `list` – shows the full commit history
+- `next` – moves to the next commit
+- `prev` – moves to the previous commit
+- `head` – moves to the head of the commit history
+- `initial` – moves to a commit with a message containing "groll:initial" or starting with "Initial state"
+- `move=<commit>` – moves to the given commit
+- `push=<branch>` – pushes the current commit via HTTPS to the "origin-https" remote repository (needs to be defined!) under the given branch
+- `version` – shows the version of sbt-groll
 
 ## Contribution policy ##
 
