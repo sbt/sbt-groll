@@ -34,7 +34,7 @@ private object GrollArg {
 
   case class Move(id: String) extends GrollArg
 
-  case class PushSolutions(branch: String) extends GrollArg
+  case class Push(branch: String) extends GrollArg
 
   case object Version extends GrollArg
 }

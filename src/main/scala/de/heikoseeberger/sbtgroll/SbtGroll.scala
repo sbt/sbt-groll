@@ -43,7 +43,8 @@ object SbtGroll extends AutoPlugin {
         """The working branch used by sbt-groll; "groll" by default"""
       )
 
-    private def prefixed(key: String) = s"groll${key.capitalize}"
+    private def prefixed(key: String): String =
+      s"groll${key.capitalize}"
   }
 
   override def projectSettings: Seq[Setting[_]] =
@@ -57,19 +58,18 @@ object SbtGroll extends AutoPlugin {
   override def trigger: PluginTrigger =
     allRequirements
 
-  private def grollCommand =
+  private def grollCommand: Command =
     Command("groll")(parser)(Groll.apply)
 
-  private def parser(state: State) = {
+  private def parser(state: State): Parser[GrollArg] = {
     import GrollArg._
     import sbt.complete.DefaultParsers._
-    def arg(koanArg: GrollArg): Parser[GrollArg] = {
+    def arg(koanArg: GrollArg): Parser[GrollArg] =
       (Space ~> koanArg.toString.decapitalize).map(_ => koanArg)
-    }
     def stringOpt[A <: GrollArg: ClassTag](ctor: String => A): Parser[A] = {
       val name = classTag[A].runtimeClass.getSimpleName
       (Space ~> name.decapitalize ~> "=" ~> NotQuoted).map(ctor)
     }
-    arg(Show) | arg(List) | arg(Next) | arg(Prev) | arg(Head) | arg(Initial) | stringOpt(Move) | stringOpt(PushSolutions) | arg(Version)
+    arg(Show) | arg(List) | arg(Next) | arg(Prev) | arg(Head) | arg(Initial) | stringOpt(Move) | stringOpt(Push) | arg(Version)
   }
 }

@@ -82,7 +82,7 @@ class Git(repository: Repository) {
       .map(idAndMessage)
 
   def pushHead(source: String, destination: String, username: String, password: String): Unit =
-    jgit.push()
+    jgit.push
       .setRemote("origin-https")
       .setRefSpecs(new RefSpec(s"$source:$destination"))
       .setForce(true)

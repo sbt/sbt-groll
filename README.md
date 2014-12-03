@@ -50,7 +50,7 @@ The `groll` command must be followed by one of the following options:
 - `head`: Moves to the head of the commit history
 - `initial`: Moves to a commit with a message containing "groll:initial" or starting with "Initial state"
 - `move=<commit>`: Moves to the given commit
-- `pushSolutions=<branch>`: Pushes the current commit to the "origin" remote repository under the branch `s"solutions/$branch"`
+- `push=<branch>`: Pushes the current commit via HTTPS to the "origin-https" remote repository (needs to be defined!) under the given branch
 - `version`: Shows the version of sbt-groll
 
 ## Contribution policy ##
