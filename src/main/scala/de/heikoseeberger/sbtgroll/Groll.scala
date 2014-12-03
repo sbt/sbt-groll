@@ -105,7 +105,7 @@ private class Groll(state: State, grollArg: GrollArg) {
             s"""Already at "$id"""",
             (id, message) => s"<> $id $message"
           )
-        case PushSolutions =>
+        case PushSolutions(branch) =>
           if (!configFile.exists())
             state.log.error(s"""Configuration file "$configFile" not found!""")
           else if (!git.existsRef(workingBranch))
@@ -115,8 +115,8 @@ private class Groll(state: State, grollArg: GrollArg) {
               val config = ConfigFactory.parseFile(configFile)
               val username = config.getString("username")
               val password = config.getString("password")
-              git.pushHead(workingBranch, s"$historyRef-solutions", username, password)
-              state.log.info(s"""Pushed solutions to branch "$historyRef-solutions"""")
+              git.pushHead(workingBranch, s"solutions/$branch", username, password)
+              state.log.info(s"""Pushed solutions to branch "solutions/$branch"""")
             } catch {
               case e: ConfigException => state.log.error(s"""Could not read username and password from configuration file "$configFile"!""")
               case e: GitAPIException => state.log.error(s"Git error: ${e.getMessage}")
