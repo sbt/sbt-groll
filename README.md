@@ -11,7 +11,7 @@ As sbt-groll is a plugin for sbt, it is installed like any other sbt plugin, tha
 In order to add sbt-groll as a plugin, just add the below setting to the relevant plugin definition, paying attention to blank lines between settings:
 
 ```
-addSbtPlugin("de.heikoseeberger" % "sbt-groll" % "4.1.0")
+addSbtPlugin("de.heikoseeberger" % "sbt-groll" % "4.2.0")
 ```
 
 After adding the sbt-groll plugin like this, you should either start sbt or, if it was already started, reload the current session by executing the `reload` command. If everything worked, you should have the new `groll` command available.
@@ -50,7 +50,7 @@ The `groll` command must be followed by one of the following options:
 - `head`: Moves to the head of the commit history
 - `initial`: Moves to a commit with a message containing "groll:initial" or starting with "Initial state"
 - `move=<commit>`: Moves to the given commit
-- `pushSolutions`: Pushes the current commit to the "origin" remote repository under the branch `s"$historyRef-solutions"`, but only if `historyRef` matches the regex pattern `\d{8}-\w+-\w+
+- `pushSolutions=<branch>`: Pushes the current commit to the "origin" remote repository under the branch `s"solutions/$branch"`
 - `version`: Shows the version of sbt-groll
 
 ## Contribution policy ##
