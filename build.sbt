@@ -1,6 +1,10 @@
-lazy val sbtGroll = project.in(file("."))
+lazy val sbtGroll = project
+  .in(file("."))
+  .enablePlugins(AutomateHeaderPlugin, GitVersioning, BuildInfoPlugin)
 
 name := "sbt-groll"
+
+sbtPlugin := true
 
 libraryDependencies ++= List(
   Library.config,

@@ -1,7 +1,7 @@
 # sbt
-lib_managed/
+lib_managed
 project/project
-target/
+target
 
 # Worksheets (Eclipse or IntelliJ)
 *.sc
@@ -12,22 +12,22 @@ target/
 .project
 .scala_dependencies
 .settings
-.target/
-.worksheet/
+.target
+.worksheet
 
 # IntelliJ
-.idea/
+.idea
 
 # ENSIME
 .ensime
-.ensime_lucene/
+.ensime_lucene
 
 # Mac
 .DS_Store
 
 # Akka Persistence
-journal/
-snapshots/
+journal
+snapshots
 
 # Log files
 *.log
