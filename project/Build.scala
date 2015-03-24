@@ -1,27 +1,26 @@
-import com.typesafe.sbt.SbtScalariform._
+import com.typesafe.sbt.GitPlugin
+import com.typesafe.sbt.SbtScalariform
+import com.typesafe.sbt.SbtScalariform.ScalariformKeys
+import de.heikoseeberger.sbtheader.HeaderPlugin
+import de.heikoseeberger.sbtheader.license.Apache2_0
 import sbt._
 import sbt.Keys._
-import sbtbuildinfo.Plugin._
-import sbtrelease.ReleasePlugin._
-import scalariform.formatter.preferences._
+import sbtbuildinfo.BuildInfoPlugin
+import scalariform.formatter.preferences.{ AlignSingleLineCaseStatements, DoubleIndentClassDeclaration }
 
 object Build extends AutoPlugin {
 
-  override def requires =
-    plugins.JvmPlugin
+  override def requires = plugins.JvmPlugin && HeaderPlugin && GitPlugin && BuildInfoPlugin
 
-  override def trigger =
-    allRequirements
+  override def trigger = allRequirements
 
   override def projectSettings =
-    scalariformSettings ++
-    releaseSettings ++
-    buildInfoSettings ++
+    // Core settings
     List(
-      // Core settings
       organization := "de.heikoseeberger",
-      scalaVersion := Version.scala,
-      crossScalaVersions := List(scalaVersion.value),
+      licenses += ("Apache-2.0", url("http://www.apache.org/licenses/LICENSE-2.0")),
+//      scalaVersion := Version.scala,
+//      crossScalaVersions := List(scalaVersion.value),
       scalacOptions ++= List(
         "-unchecked",
         "-deprecation",
@@ -29,27 +28,29 @@ object Build extends AutoPlugin {
         "-target:jvm-1.6",
         "-encoding", "UTF-8"
       ),
-      javacOptions ++= List(
-        "-source", "1.6",
-        "-target", "1.6"
-      ),
-      unmanagedSourceDirectories in Compile := List((scalaSource in Compile).value),
-      unmanagedSourceDirectories in Test := List((scalaSource in Test).value),
-      sbtPlugin := true,
-      // Publish settings
+      unmanagedSourceDirectories.in(Compile) := List(scalaSource.in(Compile).value),
+      unmanagedSourceDirectories.in(Test) := List(scalaSource.in(Test).value),
       publishTo := Some(if (isSnapshot.value) Classpaths.sbtPluginSnapshots else Classpaths.sbtPluginReleases),
-      publishMavenStyle := false,
-      // Scalariform settings
+      publishMavenStyle := false
+    ) ++
+    // Scalariform settings
+    SbtScalariform.scalariformSettings ++
+    List(
       ScalariformKeys.preferences := ScalariformKeys.preferences.value
-        .setPreference(AlignArguments, true)
-        .setPreference(AlignParameters, true)
         .setPreference(AlignSingleLineCaseStatements, true)
         .setPreference(AlignSingleLineCaseStatements.MaxArrowIndent, 100)
-        .setPreference(DoubleIndentClassDeclaration, true),
-      // Release settings
-      ReleaseKeys.versionBump := sbtrelease.Version.Bump.Minor,
-      // BuildInfo settings
-      sourceGenerators in Compile <+= buildInfo,
-      buildInfoPackage := s"${organization.value}.sbtgroll"
+        .setPreference(DoubleIndentClassDeclaration, true)
+    ) ++
+    // Git settings
+    List(
+      GitPlugin.autoImport.git.baseVersion := "4.5.0"
+    ) ++
+    // Header settings
+    List(
+      HeaderPlugin.autoImport.headers := Map("scala" -> Apache2_0("2015", "Heiko Seeberger"))
+    ) ++
+    // BuildInfo settings
+    List(
+      BuildInfoPlugin.autoImport.buildInfoPackage := s"${organization.value}.sbtgroll"
     )
 }
