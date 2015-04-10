@@ -21,19 +21,17 @@ import org.eclipse.jgit.revwalk.RevCommit
 
 package object sbtgroll {
 
-  // format: OFF
-  private[sbtgroll] val Traversable = scala.collection.immutable.Traversable
-  private[sbtgroll] type Traversable[+A] = scala.collection.immutable.Traversable[A]
+  val Traversable = scala.collection.immutable.Traversable
+  type Traversable[+A] = scala.collection.immutable.Traversable[A]
 
-  private[sbtgroll] val Iterable = scala.collection.immutable.Iterable
-  private[sbtgroll] type Iterable[+A] = scala.collection.immutable.Iterable[A]
+  val Iterable = scala.collection.immutable.Iterable
+  type Iterable[+A] = scala.collection.immutable.Iterable[A]
 
-  private[sbtgroll] val Seq = scala.collection.immutable.Seq
-  private[sbtgroll] type Seq[+A] = scala.collection.immutable.Seq[A]
+  val Seq = scala.collection.immutable.Seq
+  type Seq[+A] = scala.collection.immutable.Seq[A]
 
-  private[sbtgroll] val IndexedSeq = scala.collection.immutable.IndexedSeq
-  private[sbtgroll] type IndexedSeq[+A] = scala.collection.immutable.IndexedSeq[A]
-  // format: ON
+  val IndexedSeq = scala.collection.immutable.IndexedSeq
+  type IndexedSeq[+A] = scala.collection.immutable.IndexedSeq[A]
 
   implicit class StringOps(val s: String) extends AnyVal {
     def decapitalize: String =
