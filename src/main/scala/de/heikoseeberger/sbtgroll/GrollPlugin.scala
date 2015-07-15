@@ -1,0 +1,60 @@
+/*
+ * Copyright 2015 Heiko Seeberger
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package de.heikoseeberger.sbtgroll
+
+import java.io.File
+import sbt.complete.Parser
+import sbt.{ AutoPlugin, Command, Keys, PluginTrigger, Setting, State, plugins, settingKey }
+import scala.reflect.{ ClassTag, classTag }
+
+object GrollKey {
+  val configFile = settingKey[File]("""The configuration file for sbt-groll; "~/.sbt-groll.conf" by default""")
+  val historyRef = settingKey[String]("""The ref (commit id, branch or tag) used for the Git history; "master" by default""")
+  val workingBranch = settingKey[String]("""The working branch used by sbt-groll; "groll" by default""")
+}
+
+object GrollPlugin extends AutoPlugin {
+
+  val autoImport = GrollKey
+
+  import autoImport._
+
+  override def trigger = allRequirements
+
+  override def requires = plugins.JvmPlugin
+
+  override def projectSettings = List(
+    Keys.commands += grollCommand,
+    configFile := new File(System.getProperty("user.home"), ".sbt-groll.conf"),
+    historyRef := "master",
+    workingBranch := "groll"
+  )
+
+  private def grollCommand = Command("groll")(parser)(Groll.apply)
+
+  private def parser(state: State) = {
+    import GrollArg._
+    import sbt.complete.DefaultParsers._
+    def arg(koanArg: GrollArg): Parser[GrollArg] =
+      (Space ~> koanArg.toString.decapitalize).map(_ => koanArg)
+    def stringOpt[A <: GrollArg: ClassTag](ctor: String => A): Parser[A] = {
+      val name = classTag[A].runtimeClass.getSimpleName
+      (Space ~> name.decapitalize ~> "=" ~> NotQuoted).map(ctor)
+    }
+    arg(Show) | arg(List) | arg(Next) | arg(Prev) | arg(Head) | arg(Initial) | stringOpt(Move) | stringOpt(Push) | arg(Version)
+  }
+}

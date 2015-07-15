@@ -16,7 +16,6 @@
 
 package de.heikoseeberger.sbtgroll
 
-import SbtGroll.autoImport
 import com.typesafe.config.{ ConfigException, ConfigFactory }
 import org.eclipse.jgit.api.errors.GitAPIException
 import sbt.{ Keys, Project, State }
@@ -32,11 +31,11 @@ private class Groll(state: State, grollArg: GrollArg) {
 
   val baseDirectory = Project.extract(state).get(Keys.baseDirectory)
 
-  val configFile = Project.extract(state).get(autoImport.configFile)
+  val configFile = Project.extract(state).get(GrollKey.configFile)
 
-  val historyRef = Project.extract(state).get(autoImport.historyRef)
+  val historyRef = Project.extract(state).get(GrollKey.historyRef)
 
-  val workingBranch = Project.extract(state).get(autoImport.workingBranch)
+  val workingBranch = Project.extract(state).get(GrollKey.workingBranch)
 
   val git = Git(baseDirectory)
 
@@ -44,7 +43,7 @@ private class Groll(state: State, grollArg: GrollArg) {
 
   def apply(): State = {
     if (!git.existsRef(historyRef)) {
-      state.log.error(s"""There's no "$historyRef" tag or branch as defined with the `GrollKey.autoImport.historyRef` setting!""")
+      state.log.error(s"""There's no "$historyRef" tag or branch as defined with the `GrollKey.GrollKey.historyRef` setting!""")
       state
     } else {
       val history = git.history(historyRef)
