@@ -1,3 +1,4 @@
+import bintray.BintrayKeys
 import com.typesafe.sbt.GitPlugin
 import com.typesafe.sbt.SbtScalariform
 import com.typesafe.sbt.SbtScalariform.ScalariformKeys
@@ -30,7 +31,6 @@ object Build extends AutoPlugin {
       ),
       unmanagedSourceDirectories.in(Compile) := List(scalaSource.in(Compile).value),
       unmanagedSourceDirectories.in(Test) := List(scalaSource.in(Test).value),
-      publishTo := Some(if (isSnapshot.value) Classpaths.sbtPluginSnapshots else Classpaths.sbtPluginReleases),
       publishMavenStyle := false
     ) ++
     // Scalariform settings
@@ -52,5 +52,10 @@ object Build extends AutoPlugin {
     // BuildInfo settings
     List(
       BuildInfoPlugin.autoImport.buildInfoPackage := s"${organization.value}.sbtgroll"
+    ) ++
+    // Bintray settings
+    List (
+      BintrayKeys.bintrayRepository := "sbt-plugin-releases",
+      BintrayKeys.bintrayOrganization := Some("sbt")
     )
 }
