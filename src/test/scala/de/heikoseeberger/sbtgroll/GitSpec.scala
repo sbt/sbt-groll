@@ -30,11 +30,10 @@ class GitSpec extends WordSpec with Matchers {
       val f = fixture()
       import f._
       git.checkout("872b865", "groll")
-      git.history("groll") shouldEqual
-        List(
-          "872b865" -> "Add 2.txt",
-          "f695224" -> "Add 1.txt"
-        )
+      git.history("groll") shouldBe List(
+        "872b865" -> "Add 2.txt",
+        "f695224" -> "Add 1.txt"
+      )
     }
   }
 
@@ -43,13 +42,13 @@ class GitSpec extends WordSpec with Matchers {
       val f = fixture()
       import f._
       git.clean()
-      contents(dir) map (_.toString) shouldEqual Set("1.txt", "2.txt", "4.txt")
+      contents(dir).map(_.toString) shouldBe Set("1.txt", "2.txt", "4.txt")
     }
     "clean a dirty repo" in {
       val f = fixture("-dirty")
       import f._
       git.clean()
-      contents(dir) map (_.toString) shouldEqual Set("1.txt", "2.txt", "4.txt", "5.txt") // 5.txt has been staged, 6.txt is untracked
+      contents(dir).map(_.toString) shouldBe Set("1.txt", "2.txt", "4.txt", "5.txt") // 5.txt has been staged, 6.txt is untracked
     }
   }
 
@@ -57,7 +56,7 @@ class GitSpec extends WordSpec with Matchers {
     "return the correct commit" in {
       val f = fixture()
       import f._
-      git.current() shouldEqual "d26c92e" -> "Add 4.txt"
+      git.current() shouldBe "d26c92e" -> "Add 4.txt"
     }
   }
 
@@ -65,7 +64,7 @@ class GitSpec extends WordSpec with Matchers {
     "return the correct diff" in {
       val f = fixture()
       import f._
-      git.diff("head", "52e5f8e") shouldEqual List("4.txt")
+      git.diff("head", "52e5f8e") shouldBe List("4.txt")
     }
   }
 
@@ -82,13 +81,12 @@ class GitSpec extends WordSpec with Matchers {
     "return the correct history" in {
       val f = fixture()
       import f._
-      git.history() shouldEqual
-        List(
-          "d26c92e" -> "Add 4.txt",
-          "52e5f8e" -> "Change 1.txt",
-          "872b865" -> "Add 2.txt",
-          "f695224" -> "Add 1.txt"
-        )
+      git.history() shouldBe List(
+        "d26c92e" -> "Add 4.txt",
+        "52e5f8e" -> "Change 1.txt",
+        "872b865" -> "Add 2.txt",
+        "f695224" -> "Add 1.txt"
+      )
     }
   }
 
@@ -97,25 +95,23 @@ class GitSpec extends WordSpec with Matchers {
       val f = fixture()
       import f._
       git.resetHard()
-      git.history() shouldEqual
-        List(
-          "d26c92e" -> "Add 4.txt",
-          "52e5f8e" -> "Change 1.txt",
-          "872b865" -> "Add 2.txt",
-          "f695224" -> "Add 1.txt"
-        )
+      git.history() shouldBe List(
+        "d26c92e" -> "Add 4.txt",
+        "52e5f8e" -> "Change 1.txt",
+        "872b865" -> "Add 2.txt",
+        "f695224" -> "Add 1.txt"
+      )
     }
     "work for a dirty repo" in {
       val f = fixture("-dirty")
       import f._
       git.resetHard()
-      git.history() shouldEqual
-        List(
-          "d26c92e" -> "Add 4.txt",
-          "52e5f8e" -> "Change 1.txt",
-          "872b865" -> "Add 2.txt",
-          "f695224" -> "Add 1.txt"
-        )
+      git.history() shouldBe List(
+        "d26c92e" -> "Add 4.txt",
+        "52e5f8e" -> "Change 1.txt",
+        "872b865" -> "Add 2.txt",
+        "f695224" -> "Add 1.txt"
+      )
     }
   }
 

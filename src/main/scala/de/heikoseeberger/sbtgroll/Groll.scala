@@ -31,11 +31,11 @@ private class Groll(state: State, grollArg: GrollArg) {
 
   val baseDirectory = Project.extract(state).get(Keys.baseDirectory)
 
-  val configFile = Project.extract(state).get(GrollKey.configFile)
+  val configFile = Project.extract(state).get(GrollKey.grollConfigFile)
 
-  val historyRef = Project.extract(state).get(GrollKey.historyRef)
+  val historyRef = Project.extract(state).get(GrollKey.grollHistoryRef)
 
-  val workingBranch = Project.extract(state).get(GrollKey.workingBranch)
+  val workingBranch = Project.extract(state).get(GrollKey.grollWorkingBranch)
 
   val git = Git(baseDirectory)
 
