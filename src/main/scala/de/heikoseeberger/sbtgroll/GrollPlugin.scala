@@ -18,13 +18,22 @@ package de.heikoseeberger.sbtgroll
 
 import java.io.File
 import sbt.complete.Parser
-import sbt.{ AutoPlugin, Command, Keys, PluginTrigger, Setting, State, plugins, settingKey }
+import sbt.{ AutoPlugin, Command, Keys, State, plugins, settingKey }
 import scala.reflect.{ ClassTag, classTag }
 
 object GrollKey {
-  val configFile = settingKey[File]("""The configuration file for sbt-groll; "~/.sbt-groll.conf" by default""")
-  val historyRef = settingKey[String]("""The ref (commit id, branch or tag) used for the Git history; "master" by default""")
-  val workingBranch = settingKey[String]("""The working branch used by sbt-groll; "groll" by default""")
+
+  final val GrollConfigFileDefault = ".sbt-groll.conf"
+
+  final val GrollHistoryRefDefault = "master"
+
+  final val GrollWorkingBranchDefault = "groll"
+
+  val grollConfigFile = settingKey[File](s"""The configuration file for sbt-groll; "~/$GrollConfigFileDefault" by default""")
+
+  val grollHistoryRef = settingKey[String](s"""The ref (commit id, branch or tag) used for the Git history; "$GrollHistoryRefDefault" by default""")
+
+  val grollWorkingBranch = settingKey[String](s"""The working branch used by sbt-groll; "$GrollWorkingBranchDefault" by default""")
 }
 
 object GrollPlugin extends AutoPlugin {
@@ -39,9 +48,9 @@ object GrollPlugin extends AutoPlugin {
 
   override def projectSettings = List(
     Keys.commands += grollCommand,
-    configFile := new File(System.getProperty("user.home"), ".sbt-groll.conf"),
-    historyRef := "master",
-    workingBranch := "groll"
+    grollConfigFile := new File(System.getProperty("user.home"), GrollConfigFileDefault),
+    grollHistoryRef := GrollHistoryRefDefault,
+    grollWorkingBranch := GrollWorkingBranchDefault
   )
 
   private def grollCommand = Command("groll")(parser)(Groll.apply)
@@ -49,12 +58,11 @@ object GrollPlugin extends AutoPlugin {
   private def parser(state: State) = {
     import GrollArg._
     import sbt.complete.DefaultParsers._
-    def arg(koanArg: GrollArg): Parser[GrollArg] =
-      (Space ~> koanArg.toString.decapitalize).map(_ => koanArg)
-    def stringOpt[A <: GrollArg: ClassTag](ctor: String => A): Parser[A] = {
+    def arg(grollArg: GrollArg) = (Space ~> grollArg.toString.decapitalize).map(_ => grollArg)
+    def opt[A <: GrollArg: ClassTag](ctor: String => A) = {
       val name = classTag[A].runtimeClass.getSimpleName
       (Space ~> name.decapitalize ~> "=" ~> NotQuoted).map(ctor)
     }
-    arg(Show) | arg(List) | arg(Next) | arg(Prev) | arg(Head) | arg(Initial) | stringOpt(Move) | stringOpt(Push) | arg(Version)
+    arg(Show) | arg(List) | arg(Next) | arg(Prev) | arg(Head) | arg(Initial) | opt(Move) | opt(Push) | arg(Version)
   }
 }
