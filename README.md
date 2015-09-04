@@ -11,7 +11,7 @@ As sbt-groll is a plugin for sbt, it is installed like any other sbt plugin, tha
 In order to add sbt-groll as a plugin, just add the below setting to the relevant plugin definition:
 
 ```
-addSbtPlugin("de.heikoseeberger" % "sbt-groll" % "4.6.0")
+addSbtPlugin("de.heikoseeberger" % "sbt-groll" % "4.7.0")
 ```
 
 After adding the sbt-groll plugin like this, you should either start sbt or, if it was already started, reload the current session by executing the `reload` command. If everything worked, you should have the new `groll` command available.
@@ -35,9 +35,9 @@ In order to use sbt-groll, just execute `groll <arg_or_opt>` in an sbt session, 
 
 sbt-groll can be configured by the following settings:
 
-- `configFile: java.io.File` – the configuration file for sbt-groll; "~/.sbt-groll.conf" by default
-- `historyRef: String` – the ref (commit id, branch or tag) used for the Git history; "master" by default
-- `workingBranch: String` – the working branch used by sbt-groll; "groll" by default
+- `grollConfigFile: java.io.File` – the configuration file for sbt-groll; "~/.sbt-groll.conf" by default
+- `grollHistoryRef: String` – the ref (commit id, branch or tag) used for the Git history; "master" by default
+- `grollWorkingBranch: String` – the working branch used by sbt-groll; "groll" by default
 
 ## Arguments/options ##
 

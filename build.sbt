@@ -4,7 +4,7 @@ lazy val sbtGroll = project
 
 organization    := "de.heikoseeberger"
 name            := "sbt-groll"
-git.baseVersion := "4.7.0"
+git.baseVersion := "4.8.0"
 licenses        += ("Apache-2.0", url("http://www.apache.org/licenses/LICENSE-2.0"))
 
 scalacOptions ++= List(
