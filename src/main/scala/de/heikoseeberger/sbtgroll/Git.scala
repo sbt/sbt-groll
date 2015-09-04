@@ -109,7 +109,7 @@ class Git(repository: Repository) {
       parser.reset(reader, tree.getId)
       parser
     } finally
-      reader.release()
+      reader.close()
   }
 
   private def credentialsProvider(username: String, password: String): CredentialsProvider =
