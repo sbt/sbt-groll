@@ -40,7 +40,4 @@ preferences := preferences.value
 import de.heikoseeberger.sbtheader.license.Apache2_0
 HeaderPlugin.autoImport.headers := Map("scala" -> Apache2_0("2015", "Heiko Seeberger"))
 
-bintrayRepository   := "sbt-plugin-releases"
-bintrayOrganization := Some("sbt")
-
 buildInfoPackage := s"${organization.value}.sbtgroll"
