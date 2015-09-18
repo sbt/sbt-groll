@@ -18,8 +18,6 @@ scalacOptions ++= List(
 unmanagedSourceDirectories.in(Compile) := List(scalaSource.in(Compile).value)
 unmanagedSourceDirectories.in(Test)    := List(scalaSource.in(Test).value)
 
-testFrameworks := List(sbt.TestFrameworks.ScalaTest)
-
 libraryDependencies ++= List(
   "com.typesafe"     % "config"           % "1.3.0",
   "org.eclipse.jgit" % "org.eclipse.jgit" % "4.0.1.201506240215-r",
