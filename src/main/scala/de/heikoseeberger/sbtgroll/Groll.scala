@@ -43,7 +43,7 @@ private class Groll(state: State, grollArg: GrollArg) {
 
   def apply(): State = {
     if (!git.existsRef(historyRef)) {
-      state.log.error(s"""There's no "$historyRef" tag or branch as defined with the `GrollKey.GrollKey.historyRef` setting!""")
+      state.log.error(s"""There's no "$historyRef" tag or branch as defined with the `grollHistoryRef` setting!""")
       state
     } else {
       val history = git.history(historyRef)
