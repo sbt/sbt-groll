@@ -52,6 +52,7 @@ The `groll` command must be followed by one of the following arguments or option
 - `move=<commit>` – moves to the given commit
 - `push=<branch>` – pushes the current commit via HTTPS to the "origin-https" remote repository (needs to be defined!) under the given branch
 - `version` – shows the version of sbt-groll
+- `help` - shows this help info.
 
 ## Contribution policy ##
 
