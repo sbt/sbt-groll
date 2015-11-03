@@ -88,8 +88,9 @@ private class Groll(state: State, grollArg: GrollArg) {
           )
         case GrollArg.Initial =>
           groll(
-            history.find { case (_, message) => message.contains("groll:initial") || message.startsWith("Initial state") },
-            """There's no commit with a message containing "groll:initial" or starting with "Initial state"!""",
+            history.find { case (_, message) => message.contains("groll:initial") || message.startsWith("Initial state") }
+              .orElse(git.findCommitIdWithTag("groll-initial").flatMap(oid => history.find { case (shortId, message) => shortId == oid.shortId })),
+            """There's no commit with a message containing "groll:initial" or starting with "Initial state" nor any tag with "groll-initial"!""",
             (id, message) => s"<< $id $message"
           )
         case GrollArg.Move(id) =>
