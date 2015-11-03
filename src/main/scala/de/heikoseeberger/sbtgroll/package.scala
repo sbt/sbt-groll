@@ -17,7 +17,7 @@
 package de.heikoseeberger
 
 import java.io.File
-import org.eclipse.jgit.revwalk.RevCommit
+import org.eclipse.jgit.lib.ObjectId
 
 package object sbtgroll {
 
@@ -43,8 +43,8 @@ package object sbtgroll {
         s.head.toLower +: s.tail
   }
 
-  implicit class RevCommitOps(val commit: RevCommit) extends AnyVal {
-    def shortId: String = commit.abbreviate(7).name
+  implicit class ObjectIdOps(val objectId: ObjectId) extends AnyVal {
+    def shortId: String = objectId.abbreviate(7).name
   }
 
   implicit class FileOps(val file: File) extends AnyVal {

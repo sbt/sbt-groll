@@ -90,6 +90,14 @@ class GitSpec extends WordSpec with Matchers {
     }
   }
 
+  "Calling Git.findCommitIdWithTag" should {
+    "return the objectId of the commit to which tag points to" in {
+      val f = fixture("-with-tags")
+      import f._
+      git.findCommitIdWithTag("groll-initial").map(_.shortId) shouldBe Some("f695224")
+    }
+  }
+
   "Calling Git.resetHard" should {
     "work for a clean repo" in {
       val f = fixture()
