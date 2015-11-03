@@ -48,7 +48,7 @@ The `groll` command must be followed by one of the following arguments or option
 - `next` – moves to the next commit
 - `prev` – moves to the previous commit
 - `head` – moves to the head of the commit history
-- `initial` – moves to a commit with a message containing "groll:initial" or starting with "Initial state"
+- `initial` – moves to a commit with a message containing "groll:initial" or starting with "Initial state" or with a tag "groll-initial"
 - `move=<commit>` – moves to the given commit
 - `push=<branch>` – pushes the current commit via HTTPS to the "origin-https" remote repository (needs to be defined!) under the given branch
 - `version` – shows the version of sbt-groll
