@@ -123,6 +123,26 @@ private class Groll(state: State, grollArg: GrollArg) {
         case GrollArg.Version =>
           state.log.info(BuildInfo.version)
           state
+        case GrollArg.Help =>
+          state.log.info("Groll usage:")
+          state.log.info("Groll is helpfull when presenting using code.")
+          state.log.info("Use 'groll initial' to move the start for your presentation.")
+          state.log.info("Use 'groll next' to move forwards")
+          state.log.info("Use 'groll prev' to move backwards")
+          state.log.info("")
+          state.log.info("Available commands:")
+          state.log.info("show - shows the current commit id and message, if current commit is in history")
+          state.log.info("list - shows the full commit history")
+          state.log.info("next - moves to the next commit")
+          state.log.info("prev - moves to the previous commit")
+          state.log.info("head - moves to the head of the commit history")
+          state.log.info("""initial - moves to a commit with a message containing "groll:initial" or starting with "Initial state" or with tag "groll-initial" """)
+          state.log.info("move=<commit> - moves to the given commit")
+          state.log.info("push=<branch> - pushes the current commit via HTTPS to the \"origin-https\" remote repository (needs to be defined!) under the given branch")
+          state.log.info("version - shows the version of sbt-groll")
+          state.log.info("help - shows this help info")
+          state.log.info("See https://github.com/diversit/sbt-groll for more info about sbt-groll.")
+          state
       }
     }
   }
