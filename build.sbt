@@ -19,7 +19,7 @@ unmanagedSourceDirectories.in(Test)    := List(scalaSource.in(Test).value)
 
 libraryDependencies ++= List(
   "com.typesafe"     % "config"           % "1.3.0",
-  "org.eclipse.jgit" % "org.eclipse.jgit" % "4.0.1.201506240215-r",
+  "org.eclipse.jgit" % "org.eclipse.jgit" % "4.1.1.201511131810-r",
   "org.scalatest"    %% "scalatest"       % "2.2.5"                 % "test"
 )
 
