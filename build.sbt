@@ -4,7 +4,6 @@ lazy val sbtGroll = project
 
 organization    := "de.heikoseeberger"
 name            := "sbt-groll"
-git.baseVersion := "4.9.0"
 licenses        += ("Apache-2.0", url("http://www.apache.org/licenses/LICENSE-2.0"))
 
 scalacOptions ++= List(
@@ -25,6 +24,8 @@ libraryDependencies ++= List(
 )
 
 initialCommands := """|import de.heikoseeberger.sbtgroll._""".stripMargin
+
+git.useGitDescribe := true
 
 sbtPlugin         := true
 publishMavenStyle := false
