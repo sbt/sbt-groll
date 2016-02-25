@@ -4,14 +4,14 @@ Plugin for [sbt](http://www.scala-sbt.org) to "roll" – view and navigate – t
 
 ## Installing sbt-groll ##
 
-sbt-groll is a plugin for sbt 0.13.9 or higher. In order to install sbt, please refer to the [sbt documentation](http://www.scala-sbt.org/release/docs/Getting-Started/Setup.html). Please make sure that you are using a suitable version of sbt:
+sbt-groll is a plugin for sbt 0.13.11 or higher. In order to install sbt, please refer to the [sbt documentation](http://www.scala-sbt.org/release/docs/Getting-Started/Setup.html). Please make sure that you are using a suitable version of sbt:
 
 As sbt-groll is a plugin for sbt, it is installed like any other sbt plugin, that is by mere configuration: just add sbt-groll to your global or local plugin definition. Global plugins are defined in `~/.sbt/<sbt_version>/plugins/plugins.sbt` and local plugins are defined in `project/plugins.sbt` in your project.
 
 In order to add sbt-groll as a plugin, just add the below setting to the relevant plugin definition:
 
 ```
-addSbtPlugin("de.heikoseeberger" % "sbt-groll" % "4.8.3")
+addSbtPlugin("de.heikoseeberger" % "sbt-groll" % "4.9.0")
 ```
 
 After adding the sbt-groll plugin like this, you should either start sbt or, if it was already started, reload the current session by executing the `reload` command. If everything worked, you should have the new `groll` command available.
