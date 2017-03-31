@@ -2,11 +2,11 @@ lazy val sbtGroll = project
   .in(file("."))
   .enablePlugins(AutomateHeaderPlugin, BuildInfoPlugin, GitVersioning)
 
-organization    := "de.heikoseeberger"
-name            := "sbt-groll"
-licenses        += ("Apache-2.0", url("http://www.apache.org/licenses/LICENSE-2.0"))
+organization := "de.heikoseeberger"
+name         := "sbt-groll"
+licenses     += ("Apache-2.0", url("http://www.apache.org/licenses/LICENSE-2.0"))
 
-scalacOptions ++= List(
+scalacOptions ++= Seq(
   "-unchecked",
   "-deprecation",
   "-language:_",
@@ -14,16 +14,14 @@ scalacOptions ++= List(
   "-encoding", "UTF-8"
 )
 
-unmanagedSourceDirectories.in(Compile) := List(scalaSource.in(Compile).value)
-unmanagedSourceDirectories.in(Test)    := List(scalaSource.in(Test).value)
+unmanagedSourceDirectories.in(Compile) := Seq(scalaSource.in(Compile).value)
+unmanagedSourceDirectories.in(Test)    := Seq(scalaSource.in(Test).value)
 
-libraryDependencies ++= List(
-  "com.typesafe"     % "config"           % "1.3.0",
-  "org.eclipse.jgit" % "org.eclipse.jgit" % "4.1.1.201511131810-r",
-  "org.scalatest"    %% "scalatest"       % "2.2.5"                 % "test"
+libraryDependencies ++= Seq(
+  "com.typesafe"     %  "config"    % "1.3.1",
+  "org.scalatest"    %% "scalatest" % "3.0.1" % Test
 )
-
-initialCommands := """|import de.heikoseeberger.sbtgroll._""".stripMargin
+addSbtPlugin("com.typesafe.sbt" % "sbt-git" % "0.9.0")
 
 git.useGitDescribe := true
 
@@ -37,6 +35,6 @@ preferences := preferences.value
   .setPreference(DoubleIndentClassDeclaration, true)
 
 import de.heikoseeberger.sbtheader.license.Apache2_0
-HeaderPlugin.autoImport.headers := Map("scala" -> Apache2_0("2015", "Heiko Seeberger"))
+headers := Map("scala" -> Apache2_0("2015", "Heiko Seeberger"))
 
 buildInfoPackage := s"${organization.value}.sbtgroll"
