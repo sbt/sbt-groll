@@ -126,25 +126,28 @@ class GitSpec extends WordSpec with Matchers {
   def fixture(qualifier: String = "") =
     new {
       s"unzip -qo -d $tmpDir src/test/test-repo$qualifier.zip".!
-      val dir = tmpDir / s"test-repo$qualifier"
+      val dir        = tmpDir / s"test-repo$qualifier"
       val repository = (new FileRepositoryBuilder).setWorkTree(dir).build()
-      val git = new Git(repository)
+      val git        = new Git(repository)
     }
 
   def contents(dir: File): Set[Path] = {
     var paths = Set.empty[Path]
-    val path = Paths.get(dir.toURI)
-    Files.walkFileTree(path, new SimpleFileVisitor[Path] {
-      override def preVisitDirectory(dir: Path, attrs: BasicFileAttributes): FileVisitResult =
-        if (dir.getFileName.toString == ".git")
-          FileVisitResult.SKIP_SUBTREE
-        else
+    val path  = Paths.get(dir.toURI)
+    Files.walkFileTree(
+      path,
+      new SimpleFileVisitor[Path] {
+        override def preVisitDirectory(dir: Path, attrs: BasicFileAttributes): FileVisitResult =
+          if (dir.getFileName.toString == ".git")
+            FileVisitResult.SKIP_SUBTREE
+          else
+            FileVisitResult.CONTINUE
+        override def visitFile(file: Path, attrs: BasicFileAttributes): FileVisitResult = {
+          paths += path relativize file
           FileVisitResult.CONTINUE
-      override def visitFile(file: Path, attrs: BasicFileAttributes): FileVisitResult = {
-        paths += path relativize file
-        FileVisitResult.CONTINUE
+        }
       }
-    })
+    )
     paths
   }
 }
