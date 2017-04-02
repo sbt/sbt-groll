@@ -18,8 +18,8 @@ package de.heikoseeberger.sbtgroll
 
 import java.io.File
 import sbt.complete.Parser
-import sbt.{ AutoPlugin, Command, Keys, State, plugins, settingKey }
-import scala.reflect.{ ClassTag, classTag }
+import sbt.{ plugins, settingKey, AutoPlugin, Command, Keys, State }
+import scala.reflect.{ classTag, ClassTag }
 
 object GrollKey {
 
@@ -29,11 +29,17 @@ object GrollKey {
 
   final val GrollWorkingBranchDefault = "groll"
 
-  val grollConfigFile = settingKey[File](s"""The configuration file for sbt-groll; "~/$GrollConfigFileDefault" by default""")
+  val grollConfigFile = settingKey[File](
+    s"""The configuration file for sbt-groll; "~/$GrollConfigFileDefault" by default"""
+  )
 
-  val grollHistoryRef = settingKey[String](s"""The ref (commit id, branch or tag) used for the Git history; "$GrollHistoryRefDefault" by default""")
+  val grollHistoryRef = settingKey[String](
+    s"""The ref (commit id, branch or tag) used for the Git history; "$GrollHistoryRefDefault" by default"""
+  )
 
-  val grollWorkingBranch = settingKey[String](s"""The working branch used by sbt-groll; "$GrollWorkingBranchDefault" by default""")
+  val grollWorkingBranch = settingKey[String](
+    s"""The working branch used by sbt-groll; "$GrollWorkingBranchDefault" by default"""
+  )
 }
 
 object GrollPlugin extends AutoPlugin {
@@ -63,6 +69,8 @@ object GrollPlugin extends AutoPlugin {
       val name = classTag[A].runtimeClass.getSimpleName
       (Space ~> name.decapitalize ~> "=" ~> NotQuoted).map(ctor)
     }
-    arg(Show) | arg(List) | arg(Next) | arg(Prev) | arg(Head) | arg(Initial) | opt(Move) | opt(Push) | arg(Version) | arg(Help)
+    arg(Show) | arg(List) | arg(Next) | arg(Prev) | arg(Head) | arg(Initial) | opt(Move) | opt(
+      Push
+    ) | arg(Version) | arg(Help)
   }
 }

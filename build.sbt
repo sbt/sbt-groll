@@ -1,40 +1,89 @@
-lazy val sbtGroll = project
-  .in(file("."))
-  .enablePlugins(AutomateHeaderPlugin, BuildInfoPlugin, GitVersioning)
+// *****************************************************************************
+// Projects
+// *****************************************************************************
 
-organization := "de.heikoseeberger"
-name         := "sbt-groll"
-licenses     += ("Apache-2.0", url("http://www.apache.org/licenses/LICENSE-2.0"))
+lazy val `sbt-groll` =
+  project
+    .in(file("."))
+    .enablePlugins(AutomateHeaderPlugin, BuildInfoPlugin, GitVersioning)
+    .settings(settings)
+    .settings(
+      libraryDependencies ++= Seq(
+        library.config,
+        library.scalaTest % Test
+      ),
+      addSbtPlugin(library.sbtGit)
+    )
 
-scalacOptions ++= Seq(
-  "-unchecked",
-  "-deprecation",
-  "-language:_",
-  "-target:jvm-1.6",
-  "-encoding", "UTF-8"
+// *****************************************************************************
+// Library dependencies
+// *****************************************************************************
+
+lazy val library =
+  new {
+    object Version {
+      val config     = "1.3.1"
+      val sbtGit     = "0.9.0"
+      val scalaTest  = "3.0.1"
+    }
+    val config     = "com.typesafe"     %  "config"    % Version.config
+    val sbtGit     = "com.typesafe.sbt" % "sbt-git"    % Version.sbtGit
+    val scalaTest  = "org.scalatest"    %% "scalatest" % Version.scalaTest
+  }
+
+
+// *****************************************************************************
+// Settings
+// *****************************************************************************
+
+lazy val settings =
+  commonSettings ++
+  gitSettings ++
+  headerSettings ++
+  pluginSettings ++
+  buildInfoSettings
+
+lazy val commonSettings =
+  Seq(
+    // scalaVersion from .travis.yml via sbt-travisci
+    // scalaVersion := "2.12.1
+    organization := "de.heikoseeberger",
+    licenses += ("Apache 2.0",
+                 url("http://www.apache.org/licenses/LICENSE-2.0")),
+    mappings.in(Compile, packageBin) += baseDirectory.in(ThisBuild).value / "LICENSE" -> "LICENSE",
+    scalacOptions ++= Seq(
+      "-unchecked",
+      "-deprecation",
+      "-language:_",
+      "-target:jvm-1.6",
+      "-encoding", "UTF-8"
+    ),
+    unmanagedSourceDirectories.in(Compile) := Seq(scalaSource.in(Compile).value),
+    unmanagedSourceDirectories.in(Test) := Seq(scalaSource.in(Test).value),
+    shellPrompt in ThisBuild := { state =>
+      val project = Project.extract(state).currentRef.project
+      s"[$project]> "
+    }
 )
 
-unmanagedSourceDirectories.in(Compile) := Seq(scalaSource.in(Compile).value)
-unmanagedSourceDirectories.in(Test)    := Seq(scalaSource.in(Test).value)
+lazy val gitSettings =
+  Seq(
+    git.useGitDescribe := true
+  )
 
-libraryDependencies ++= Seq(
-  "com.typesafe"     %  "config"    % "1.3.1",
-  "org.scalatest"    %% "scalatest" % "3.0.1" % Test
-)
-addSbtPlugin("com.typesafe.sbt" % "sbt-git" % "0.9.0")
+import de.heikoseeberger.sbtheader.license._
+lazy val headerSettings =
+  Seq(
+    headers := Map("scala" -> Apache2_0("2015", "Heiko Seeberger"))
+  )
 
-git.useGitDescribe := true
+lazy val pluginSettings =
+  Seq(
+    sbtPlugin := true,
+    publishMavenStyle := false
+  )
 
-sbtPlugin         := true
-publishMavenStyle := false
-
-import scalariform.formatter.preferences._
-preferences := preferences.value
-  .setPreference(AlignSingleLineCaseStatements, true)
-  .setPreference(AlignSingleLineCaseStatements.MaxArrowIndent, 100)
-  .setPreference(DoubleIndentClassDeclaration, true)
-
-import de.heikoseeberger.sbtheader.license.Apache2_0
-headers := Map("scala" -> Apache2_0("2015", "Heiko Seeberger"))
-
-buildInfoPackage := s"${organization.value}.sbtgroll"
+lazy val buildInfoSettings =
+  Seq(
+    buildInfoPackage := s"${organization.value}.sbtgroll"
+  )

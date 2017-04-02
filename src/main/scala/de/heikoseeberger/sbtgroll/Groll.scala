@@ -43,7 +43,9 @@ private class Groll(state: State, grollArg: GrollArg) {
 
   def apply(): State = {
     if (!git.existsRef(historyRef)) {
-      state.log.error(s"""There's no "$historyRef" tag or branch as defined with the `grollHistoryRef` setting!""")
+      state.log.error(
+        s"""There's no "$historyRef" tag or branch as defined with the `grollHistoryRef` setting!"""
+      )
       state
     } else {
       val history = git.history(historyRef)
@@ -88,8 +90,18 @@ private class Groll(state: State, grollArg: GrollArg) {
           )
         case GrollArg.Initial =>
           groll(
-            history.find { case (_, message) => message.contains("groll:initial") || message.startsWith("Initial state") }
-              .orElse(git.findCommitIdWithTag("groll-initial").flatMap(oid => history.find { case (shortId, message) => shortId == oid.shortId })),
+            history
+              .find {
+                case (_, message) =>
+                  message.contains("groll:initial") || message.startsWith("Initial state")
+              }
+              .orElse(
+                git
+                  .findCommitIdWithTag("groll-initial")
+                  .flatMap(
+                    oid => history.find { case (shortId, message) => shortId == oid.shortId }
+                  )
+              ),
             """There's no commit with a message containing "groll:initial" or starting with "Initial state" nor any tag with "groll-initial"!""",
             (id, message) => s"<< $id $message"
           )
@@ -106,16 +118,21 @@ private class Groll(state: State, grollArg: GrollArg) {
           if (!configFile.exists())
             state.log.error(s"""Configuration file "$configFile" not found!""")
           else if (!git.existsRef(workingBranch))
-            state.log.warn(s"""There's no working branch "$workingBranch": Have you used `groll initial`?""")
+            state.log.warn(
+              s"""There's no working branch "$workingBranch": Have you used `groll initial`?"""
+            )
           else {
             try {
-              val config = ConfigFactory.parseFile(configFile)
+              val config   = ConfigFactory.parseFile(configFile)
               val username = config.getString("username")
               val password = config.getString("password")
               git.pushHead(workingBranch, branch, username, password)
               state.log.info(s"""Pushed current state to branch "$branch"""")
             } catch {
-              case e: ConfigException => state.log.error(s"""Could not read username and password from configuration file "$configFile"!""")
+              case e: ConfigException =>
+                state.log.error(
+                  s"""Could not read username and password from configuration file "$configFile"!"""
+                )
               case e: GitAPIException => state.log.error(s"Git error: ${e.getMessage}")
             }
           }
@@ -131,31 +148,42 @@ private class Groll(state: State, grollArg: GrollArg) {
           state.log.info("Use 'groll prev' to move backwards")
           state.log.info("")
           state.log.info("Available commands:")
-          state.log.info("show - shows the current commit id and message, if current commit is in history")
+          state.log.info(
+            "show - shows the current commit id and message, if current commit is in history"
+          )
           state.log.info("list - shows the full commit history")
           state.log.info("next - moves to the next commit")
           state.log.info("prev - moves to the previous commit")
           state.log.info("head - moves to the head of the commit history")
-          state.log.info("""initial - moves to a commit with a message containing "groll:initial" or starting with "Initial state" or with tag "groll-initial" """)
+          state.log.info(
+            """initial - moves to a commit with a message containing "groll:initial" or starting with "Initial state" or with tag "groll-initial" """
+          )
           state.log.info("move=<commit> - moves to the given commit")
-          state.log.info("push=<branch> - pushes the current commit via HTTPS to the \"origin-https\" remote repository (needs to be defined!) under the given branch")
+          state.log.info(
+            "push=<branch> - pushes the current commit via HTTPS to the \"origin-https\" remote repository (needs to be defined!) under the given branch"
+          )
           state.log.info("version - shows the version of sbt-groll")
           state.log.info("help - shows this help info")
-          state.log.info("See https://github.com/diversit/sbt-groll for more info about sbt-groll.")
+          state.log.info(
+            "See https://github.com/diversit/sbt-groll for more info about sbt-groll."
+          )
           state
       }
     }
   }
 
-  def ifCurrentInHistory(history: Seq[(String, String)])(action: => State): State = {
+  def ifCurrentInHistory(history: Seq[(String, String)])(action: => State): State =
     if (!history.map(fst).contains(currentId)) {
-      state.log.warn(s"""Current commit "$currentId" is not within the history defined by "$historyRef": Use "head", "initial" or "move"!""")
+      state.log.warn(
+        s"""Current commit "$currentId" is not within the history defined by "$historyRef": Use "head", "initial" or "move"!"""
+      )
       state
     } else
       action
-  }
 
-  def groll(idAndMessage: Option[(String, String)], warn: => String, info: (String, String) => String): State =
+  def groll(idAndMessage: Option[(String, String)],
+            warn: => String,
+            info: (String, String) => String): State =
     idAndMessage match {
       case None =>
         state.log.warn(warn)

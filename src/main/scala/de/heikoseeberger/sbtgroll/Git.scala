@@ -22,7 +22,11 @@ import org.eclipse.jgit.api.{ Git => JGit }
 import org.eclipse.jgit.lib.{ ObjectId, Repository }
 import org.eclipse.jgit.revwalk.{ RevCommit, RevWalk }
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder
-import org.eclipse.jgit.transport.{ CredentialsProvider, RefSpec, UsernamePasswordCredentialsProvider }
+import org.eclipse.jgit.transport.{
+  CredentialsProvider,
+  RefSpec,
+  UsernamePasswordCredentialsProvider
+}
 import org.eclipse.jgit.treewalk.{ AbstractTreeIterator, CanonicalTreeParser }
 import scala.collection.JavaConversions._
 
@@ -36,18 +40,19 @@ class Git(repository: Repository) {
   private val jgit = new JGit(repository)
 
   /**
-   * @param tagname Name of a tag (not containing 'refs/tags/').
-   * @return Option with the commit id to which given tag points to.
-   */
-  def findCommitIdWithTag(tagname: String): Option[ObjectId] = {
-    jgit.tagList().call()
+    * @param tagname Name of a tag (not containing 'refs/tags/').
+    * @return Option with the commit id to which given tag points to.
+    */
+  def findCommitIdWithTag(tagname: String): Option[ObjectId] =
+    jgit
+      .tagList()
+      .call()
       .find(_.getName == s"refs/tags/$tagname")
       .map(ref => {
         // Must peel the ref to get the peeledObjectId which points
         // to the commit to which the tags belongs
         jgit.getRepository.peel(ref).getPeeledObjectId
       })
-  }
 
   def checkout(ref: String, branch: String): Unit = {
     jgit.checkout
@@ -113,7 +118,7 @@ class Git(repository: Repository) {
 
   private def tree(ref: String): AbstractTreeIterator = {
     val tree = {
-      val walk = new RevWalk(repository)
+      val walk   = new RevWalk(repository)
       val commit = walk.parseCommit(repository.resolve(ref))
       walk.parseTree(commit.getTree.getId)
     }
@@ -122,8 +127,7 @@ class Git(repository: Repository) {
     try {
       parser.reset(reader, tree.getId)
       parser
-    } finally
-      reader.close()
+    } finally reader.close()
   }
 
   private def credentialsProvider(username: String, password: String): CredentialsProvider =
