@@ -2,12 +2,12 @@
 
 Plugin for [sbt](http://www.scala-sbt.org) to "roll" – view and navigate – the
 [Git](http://git-scm.com/) commit history. This turns out to be very useful for live coding and
-training sessions. As of version 2 sbt-groll is using [JGit](http://www.eclipse.org/jgit/), i.e. no
-local Git installation is needed.
+training sessions. As of version 5 sbt-groll depends on [sbt-git](https://github.com/sbt/sbt-git),
+i.e. a local Git installation can be used, but is not needed.
 
 ## Installing sbt-groll ##
 
-sbt-groll is a plugin for sbt 0.13.11 or higher. In order to install sbt, please refer to the
+sbt-groll is a plugin for sbt 0.13.13 or higher. In order to install sbt, please refer to the
 [sbt documentation](http://www.scala-sbt.org/release/docs/Getting-Started/Setup.html). Please make
 sure that you are using a suitable version of sbt:
 
@@ -19,7 +19,7 @@ defined in `~/.sbt/<sbt_version>/plugins/plugins.sbt` and local plugins are defi
 In order to add sbt-groll as a plugin, just add the below setting to the relevant plugin definition:
 
 ```
-addSbtPlugin("de.heikoseeberger" % "sbt-groll" % "4.9.0")
+addSbtPlugin("de.heikoseeberger" % "sbt-groll" % "5.0.0")
 ```
 
 After adding the sbt-groll plugin like this, you should either start sbt or, if it was already
