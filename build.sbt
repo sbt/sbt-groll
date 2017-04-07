@@ -10,7 +10,8 @@ lazy val `sbt-groll` =
     .settings(
       libraryDependencies ++= Seq(
         library.config,
-        library.scalaTest % Test
+        library.scalaTest % Test,
+        library.slf4jNop  % Test
       ),
       addSbtPlugin(library.sbtGit)
     )
@@ -22,13 +23,15 @@ lazy val `sbt-groll` =
 lazy val library =
   new {
     object Version {
-      val config     = "1.3.1"
-      val sbtGit     = "0.9.0"
-      val scalaTest  = "3.0.1"
+      val config    = "1.3.1"
+      val slf4jNop  = "1.7.25"
+      val sbtGit    = "0.9.2"
+      val scalaTest = "3.0.1"
     }
-    val config     = "com.typesafe"     %  "config"    % Version.config
-    val sbtGit     = "com.typesafe.sbt" % "sbt-git"    % Version.sbtGit
-    val scalaTest  = "org.scalatest"    %% "scalatest" % Version.scalaTest
+    val config    = "com.typesafe"     %  "config"    % Version.config
+    val sbtGit    = "com.typesafe.sbt" %  "sbt-git"   % Version.sbtGit
+    val scalaTest = "org.scalatest"    %% "scalatest" % Version.scalaTest
+    val slf4jNop  = "org.slf4j"        %  "slf4j-nop" % Version.slf4jNop
   }
 
 
