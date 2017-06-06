@@ -25,8 +25,8 @@ lazy val library =
     object Version {
       val config    = "1.3.1"
       val slf4jNop  = "1.7.25"
-      val sbtGit    = "0.9.2"
-      val scalaTest = "3.0.1"
+      val sbtGit    = "0.9.3"
+      val scalaTest = "3.0.3"
     }
     val config    = "com.typesafe"     %  "config"    % Version.config
     val sbtGit    = "com.typesafe.sbt" %  "sbt-git"   % Version.sbtGit
@@ -42,8 +42,6 @@ lazy val library =
 lazy val settings =
   commonSettings ++
   gitSettings ++
-  headerSettings ++
-  pluginSettings ++
   buildInfoSettings
 
 lazy val commonSettings =
@@ -51,9 +49,9 @@ lazy val commonSettings =
     // scalaVersion from .travis.yml via sbt-travisci
     // scalaVersion := "2.12.1
     organization := "de.heikoseeberger",
-    licenses += ("Apache 2.0",
-                 url("http://www.apache.org/licenses/LICENSE-2.0")),
-    mappings.in(Compile, packageBin) += baseDirectory.in(ThisBuild).value / "LICENSE" -> "LICENSE",
+    organizationName := "Heiko Seeberger",
+    startYear := Some(2015),
+    licenses += ("Apache-2.0", url("http://www.apache.org/licenses/LICENSE-2.0")),
     scalacOptions ++= Seq(
       "-unchecked",
       "-deprecation",
@@ -66,24 +64,14 @@ lazy val commonSettings =
     shellPrompt in ThisBuild := { state =>
       val project = Project.extract(state).currentRef.project
       s"[$project]> "
-    }
+    },
+    sbtPlugin := true,
+    publishMavenStyle := false
 )
 
 lazy val gitSettings =
   Seq(
     git.useGitDescribe := true
-  )
-
-import de.heikoseeberger.sbtheader.license._
-lazy val headerSettings =
-  Seq(
-    headers := Map("scala" -> Apache2_0("2015", "Heiko Seeberger"))
-  )
-
-lazy val pluginSettings =
-  Seq(
-    sbtPlugin := true,
-    publishMavenStyle := false
   )
 
 lazy val buildInfoSettings =
