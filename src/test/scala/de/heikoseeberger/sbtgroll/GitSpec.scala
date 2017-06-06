@@ -64,7 +64,7 @@ class GitSpec extends WordSpec with Matchers {
     "return the correct diff" in {
       val f = fixture()
       import f._
-      git.diff("head", "52e5f8e") shouldBe List("4.txt")
+      git.diff("HEAD", "52e5f8e") shouldBe List("4.txt")
     }
   }
 
