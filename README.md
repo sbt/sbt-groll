@@ -7,7 +7,7 @@ i.e. a local Git installation can be used, but is not needed.
 
 ## Installing sbt-groll ##
 
-sbt-groll is a plugin for sbt 0.13.13 or higher. In order to install sbt, please refer to the
+sbt-groll is a plugin for sbt 1.0.0 or higher. In order to install sbt, please refer to the
 [sbt documentation](http://www.scala-sbt.org/release/docs/Getting-Started/Setup.html). Please make
 sure that you are using a suitable version of sbt:
 
@@ -19,7 +19,7 @@ defined in `~/.sbt/<sbt_version>/plugins/plugins.sbt` and local plugins are defi
 In order to add sbt-groll as a plugin, just add the below setting to the relevant plugin definition:
 
 ```
-addSbtPlugin("de.heikoseeberger" % "sbt-groll" % "5.0.2")
+addSbtPlugin("de.heikoseeberger" % "sbt-groll" % "6.0.0")
 ```
 
 After adding the sbt-groll plugin like this, you should either start sbt or, if it was already
@@ -70,7 +70,6 @@ state" or with a tag "groll-initial"
 - `move=<commit>` – moves to the given commit
 - `push=<branch>` – pushes the current commit via HTTPS to the "origin-https" remote repository
   (needs to be defined!) under the given branch
-- `version` – shows the version of sbt-groll
 - `help` - shows this help info.
 
 Contributions via GitHub pull requests are gladly accepted from their original author. Along with
