@@ -28,7 +28,7 @@ import org.eclipse.jgit.transport.{
   UsernamePasswordCredentialsProvider
 }
 import org.eclipse.jgit.treewalk.{ AbstractTreeIterator, CanonicalTreeParser }
-import scala.collection.JavaConversions._
+import scala.collection.JavaConverters._
 
 object Git {
   def apply(workTree: File): Git =
@@ -47,6 +47,7 @@ class Git(repository: Repository) {
     jgit
       .tagList()
       .call()
+      .asScala
       .find(_.getName == s"refs/tags/$tagname")
       .map(ref => {
         // Must peel the ref to get the peeledObjectId which points
@@ -79,6 +80,7 @@ class Git(repository: Repository) {
     jgit.log
       .setMaxCount(1)
       .call()
+      .asScala
       .map(idAndMessage)
       .head
 
@@ -87,6 +89,7 @@ class Git(repository: Repository) {
       .setNewTree(tree(newRef))
       .setOldTree(tree(oldRef))
       .call()
+      .asScala
       .toList
       .map(_.getNewPath)
 
@@ -97,6 +100,7 @@ class Git(repository: Repository) {
     jgit.log
       .add(repository.resolve(ref))
       .call()
+      .asScala
       .toList
       .map(idAndMessage)
 

@@ -36,7 +36,5 @@ private object GrollArg {
 
   case class Push(branch: String) extends GrollArg
 
-  case object Version extends GrollArg
-
   case object Help extends GrollArg
 }

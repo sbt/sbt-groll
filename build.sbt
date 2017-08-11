@@ -5,7 +5,7 @@
 lazy val `sbt-groll` =
   project
     .in(file("."))
-    .enablePlugins(AutomateHeaderPlugin, BuildInfoPlugin, GitVersioning)
+    .enablePlugins(AutomateHeaderPlugin, GitVersioning)
     .settings(settings)
     .settings(
       libraryDependencies ++= Seq(
@@ -42,12 +42,12 @@ lazy val library =
 lazy val settings =
   commonSettings ++
   gitSettings ++
-  buildInfoSettings
+  scalafmtSettings
 
 lazy val commonSettings =
   Seq(
     // scalaVersion from .travis.yml via sbt-travisci
-    // scalaVersion := "2.12.1
+    // scalaVersion := "2.12.3
     organization := "de.heikoseeberger",
     organizationName := "Heiko Seeberger",
     startYear := Some(2015),
@@ -56,7 +56,7 @@ lazy val commonSettings =
       "-unchecked",
       "-deprecation",
       "-language:_",
-      "-target:jvm-1.6",
+      "-target:jvm-1.8",
       "-encoding", "UTF-8"
     ),
     unmanagedSourceDirectories.in(Compile) := Seq(scalaSource.in(Compile).value),
@@ -74,7 +74,9 @@ lazy val gitSettings =
     git.useGitDescribe := true
   )
 
-lazy val buildInfoSettings =
+lazy val scalafmtSettings =
   Seq(
-    buildInfoPackage := s"${organization.value}.sbtgroll"
+    scalafmtOnCompile := true,
+    scalafmtOnCompile.in(Sbt) := false,
+    scalafmtVersion := "1.1.0"
   )

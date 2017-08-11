@@ -21,6 +21,7 @@ import org.eclipse.jgit.api.errors.GitAPIException
 import sbt.{ Keys, Project, State }
 
 private object Groll {
+
   def apply(state: State, grollArg: GrollArg): State =
     new Groll(state, grollArg).apply()
 }
@@ -136,9 +137,6 @@ private class Groll(state: State, grollArg: GrollArg) {
               case e: GitAPIException => state.log.error(s"Git error: ${e.getMessage}")
             }
           }
-          state
-        case GrollArg.Version =>
-          state.log.info(BuildInfo.version)
           state
         case GrollArg.Help =>
           state.log.info("Groll usage:")

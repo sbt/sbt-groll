@@ -69,8 +69,14 @@ object GrollPlugin extends AutoPlugin {
       val name = classTag[A].runtimeClass.getSimpleName
       (Space ~> name.decapitalize ~> "=" ~> NotQuoted).map(ctor)
     }
-    arg(Show) | arg(List) | arg(Next) | arg(Prev) | arg(Head) | arg(Initial) | opt(Move) | opt(
-      Push
-    ) | arg(Version) | arg(Help)
+    arg(Show) |
+    arg(List) |
+    arg(Next) |
+    arg(Prev) |
+    arg(Head) |
+    arg(Initial) |
+    opt(Move) |
+    opt(Push) |
+    arg(Help)
   }
 }
