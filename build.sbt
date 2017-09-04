@@ -26,7 +26,7 @@ lazy val library =
       val config    = "1.3.1"
       val slf4jNop  = "1.7.25"
       val sbtGit    = "0.9.3"
-      val scalaTest = "3.0.3"
+      val scalaTest = "3.0.4"
     }
     val config    = "com.typesafe"     %  "config"    % Version.config
     val sbtGit    = "com.typesafe.sbt" %  "sbt-git"   % Version.sbtGit
