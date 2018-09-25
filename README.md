@@ -19,7 +19,7 @@ defined in `~/.sbt/<sbt_version>/plugins/plugins.sbt` and local plugins are defi
 In order to add sbt-groll as a plugin, just add the below setting to the relevant plugin definition:
 
 ```
-addSbtPlugin("de.heikoseeberger" % "sbt-groll" % "6.0.0")
+addSbtPlugin("de.heikoseeberger" % "sbt-groll" % "6.1.0")
 ```
 
 After adding the sbt-groll plugin like this, you should either start sbt or, if it was already
