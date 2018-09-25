@@ -5,7 +5,7 @@
 lazy val `sbt-groll` =
   project
     .in(file("."))
-    .enablePlugins(AutomateHeaderPlugin, GitVersioning)
+    .enablePlugins(AutomateHeaderPlugin, SbtPlugin)
     .settings(settings)
     .settings(
       libraryDependencies ++= Seq(
@@ -23,10 +23,10 @@ lazy val `sbt-groll` =
 lazy val library =
   new {
     object Version {
-      val config    = "1.3.1"
+      val config    = "1.3.3"
       val slf4jNop  = "1.7.25"
-      val sbtGit    = "0.9.3"
-      val scalaTest = "3.0.4"
+      val sbtGit    = "1.0.0"
+      val scalaTest = "3.0.5"
     }
     val config    = "com.typesafe"     %  "config"    % Version.config
     val sbtGit    = "com.typesafe.sbt" %  "sbt-git"   % Version.sbtGit
@@ -41,7 +41,6 @@ lazy val library =
 
 lazy val settings =
   commonSettings ++
-  gitSettings ++
   scalafmtSettings
 
 lazy val commonSettings =
@@ -57,22 +56,16 @@ lazy val commonSettings =
       "-deprecation",
       "-language:_",
       "-target:jvm-1.8",
-      "-encoding", "UTF-8"
+      "-encoding", "UTF-8",
+      "-Ypartial-unification",
+      "-Ywarn-unused-import"
     ),
-    unmanagedSourceDirectories.in(Compile) := Seq(scalaSource.in(Compile).value),
-    unmanagedSourceDirectories.in(Test) := Seq(scalaSource.in(Test).value),
-    sbtPlugin := true,
+    Compile / unmanagedSourceDirectories := Seq((Compile / scalaSource).value),
+    Test / unmanagedSourceDirectories := Seq((Test / scalaSource).value),
     publishMavenStyle := false
 )
 
-lazy val gitSettings =
-  Seq(
-    git.useGitDescribe := true
-  )
-
 lazy val scalafmtSettings =
   Seq(
-    scalafmtOnCompile := true,
-    scalafmtOnCompile.in(Sbt) := false,
-    scalafmtVersion := "1.1.0"
+    scalafmtOnCompile := true
   )

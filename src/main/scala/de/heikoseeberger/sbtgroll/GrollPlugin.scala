@@ -17,7 +17,6 @@
 package de.heikoseeberger.sbtgroll
 
 import java.io.File
-import sbt.complete.Parser
 import sbt.{ plugins, settingKey, AutoPlugin, Command, Keys, State }
 import scala.reflect.{ classTag, ClassTag }
 
