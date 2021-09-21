@@ -21,7 +21,7 @@ jobs:
         uses: coursier/cache-action@v6
       - name: Build and test
         run: |
-          sbt -v clean +test +scripted
+          sbt -v clean test
           rm -rf "$HOME/.ivy2/local" || true
           find $HOME/Library/Caches/Coursier/v1        -name "ivydata-*.properties" -delete || true
           find $HOME/.ivy2/cache                       -name "ivydata-*.properties" -delete || true
