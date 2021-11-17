@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Heiko Seeberger
+ * Copyright 2016 Heiko Seeberger
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,21 +26,21 @@ private object Groll {
     new Groll(state, grollArg).apply()
 }
 
-private class Groll(state: State, grollArg: GrollArg) {
+private final class Groll(state: State, grollArg: GrollArg) {
 
-  val BuildDefinition = """.+sbt|project/.+\.scala|project/.+\.sbt"""
+  private val BuildDefinition = """.+sbt|project/.+\.scala|project/.+\.sbt"""
 
-  val baseDirectory = Project.extract(state).get(Keys.baseDirectory)
+  private val baseDirectory = Project.extract(state).get(Keys.baseDirectory)
 
-  val configFile = Project.extract(state).get(GrollKey.grollConfigFile)
+  private val configFile = Project.extract(state).get(GrollKey.grollConfigFile)
 
-  val historyRef = Project.extract(state).get(GrollKey.grollHistoryRef)
+  private val historyRef = Project.extract(state).get(GrollKey.grollHistoryRef)
 
-  val workingBranch = Project.extract(state).get(GrollKey.grollWorkingBranch)
+  private val workingBranch = Project.extract(state).get(GrollKey.grollWorkingBranch)
 
-  val git = Git(baseDirectory)
+  private val git = Git(baseDirectory)
 
-  val (currentId, currentMessage) = git.current()
+  private val (currentId, currentMessage) = git.current()
 
   def apply(): State = {
     if (!git.existsRef(historyRef)) {
@@ -56,14 +56,15 @@ private class Groll(state: State, grollArg: GrollArg) {
             state.log.info(s"== $currentId $currentMessage")
             state
           }
+
         case GrollArg.List =>
-          for ((id, message) <- history) {
+          for ((id, message) <- history)
             if (id == currentId)
               state.log.info(s"== $id $message")
             else
               state.log.info(s"   $id $message")
-          }
           state
+
         case GrollArg.Next =>
           ifCurrentInHistory(history) {
             groll(
@@ -72,6 +73,7 @@ private class Groll(state: State, grollArg: GrollArg) {
               (id, message) => s">> $id $message"
             )
           }
+
         case GrollArg.Prev =>
           ifCurrentInHistory(history) {
             groll(
@@ -80,6 +82,7 @@ private class Groll(state: State, grollArg: GrollArg) {
               (id, message) => s"<< $id $message"
             )
           }
+
         case GrollArg.Head =>
           groll(
             if (currentId == history.head._1)
@@ -89,6 +92,7 @@ private class Groll(state: State, grollArg: GrollArg) {
             "Already at the head of the commit history!",
             (id, message) => s">> $id $message"
           )
+
         case GrollArg.Initial =>
           groll(
             history
@@ -99,13 +103,14 @@ private class Groll(state: State, grollArg: GrollArg) {
               .orElse(
                 git
                   .findCommitIdWithTag("groll-initial")
-                  .flatMap(
-                    oid => history.find { case (shortId, message) => shortId == oid.shortId }
+                  .flatMap(oid =>
+                    history.find { case (shortId, message) => shortId == oid.shortId }
                   )
               ),
             """There's no commit with a message containing "groll:initial" or starting with "Initial state" nor any tag with "groll-initial"!""",
             (id, message) => s"<< $id $message"
           )
+
         case GrollArg.Move(id) =>
           groll(
             if (currentId == id)
@@ -115,6 +120,7 @@ private class Groll(state: State, grollArg: GrollArg) {
             s"""Already at "$id"""",
             (id, message) => s"<> $id $message"
           )
+
         case GrollArg.Push(branch) =>
           if (!configFile.exists())
             state.log.error(s"""Configuration file "$configFile" not found!""")
@@ -138,6 +144,7 @@ private class Groll(state: State, grollArg: GrollArg) {
             }
           }
           state
+
         case GrollArg.Help =>
           state.log.info("Groll usage:")
           state.log.info("Groll is helpfull when presenting using code.")
@@ -170,7 +177,7 @@ private class Groll(state: State, grollArg: GrollArg) {
     }
   }
 
-  def ifCurrentInHistory(history: Seq[(String, String)])(action: => State): State =
+  private def ifCurrentInHistory(history: Seq[(String, String)])(action: => State) =
     if (!history.map(fst).contains(currentId)) {
       state.log.warn(
         s"""Current commit "$currentId" is not within the history defined by "$historyRef": Use "head", "initial" or "move"!"""
@@ -179,13 +186,16 @@ private class Groll(state: State, grollArg: GrollArg) {
     } else
       action
 
-  def groll(idAndMessage: Option[(String, String)],
-            warn: => String,
-            info: (String, String) => String): State =
+  private def groll(
+      idAndMessage: Option[(String, String)],
+      warn: => String,
+      info: (String, String) => String
+  ) =
     idAndMessage match {
       case None =>
         state.log.warn(warn)
         state
+
       case Some((id, message)) =>
         git.resetHard()
         git.clean()

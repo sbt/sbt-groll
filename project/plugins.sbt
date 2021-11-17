@@ -1,6 +1,3 @@
-addSbtPlugin("com.dwijnand"      % "sbt-dynver"   % "3.0.0")
-addSbtPlugin("com.geirsson"      % "sbt-scalafmt" % "1.5.1")
-addSbtPlugin("de.heikoseeberger" % "sbt-header"   % "5.0.0")
-addSbtPlugin("org.foundweekends" % "sbt-bintray"  % "0.5.4")
-
-libraryDependencies += "org.slf4j" % "slf4j-nop" % "1.7.25" // Needed by sbt-git
+addSbtPlugin("com.github.sbt"    % "sbt-ci-release" % "1.5.10")
+addSbtPlugin("de.heikoseeberger" % "sbt-header"     % "5.6.0")
+addSbtPlugin("org.scalameta"     % "sbt-scalafmt"   % "2.4.3")

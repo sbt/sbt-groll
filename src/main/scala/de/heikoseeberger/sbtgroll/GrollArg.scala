@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Heiko Seeberger
+ * Copyright 2016 Heiko Seeberger
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,21 +20,21 @@ private sealed trait GrollArg
 
 private object GrollArg {
 
-  case object Show extends GrollArg
+  final case object Show extends GrollArg
 
-  case object List extends GrollArg
+  final case object List extends GrollArg
 
-  case object Next extends GrollArg
+  final case object Next extends GrollArg
 
-  case object Prev extends GrollArg
+  final case object Prev extends GrollArg
 
-  case object Head extends GrollArg
+  final case object Head extends GrollArg
 
-  case object Initial extends GrollArg
+  final case object Initial extends GrollArg
 
-  case class Move(id: String) extends GrollArg
+  final case class Move(id: String) extends GrollArg
 
-  case class Push(branch: String) extends GrollArg
+  final case class Push(branch: String) extends GrollArg
 
-  case object Help extends GrollArg
+  final case object Help extends GrollArg
 }

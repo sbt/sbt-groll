@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Heiko Seeberger
+ * Copyright 2016 Heiko Seeberger
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,17 +17,13 @@
 package de.heikoseeberger.sbtgroll
 
 import java.io.File
-import org.eclipse.jgit.api.ResetCommand.ResetType
 import org.eclipse.jgit.api.{ Git => JGit }
+import org.eclipse.jgit.api.ResetCommand.ResetType
 import org.eclipse.jgit.lib.{ ObjectId, Repository }
 import org.eclipse.jgit.revwalk.{ RevCommit, RevWalk }
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder
-import org.eclipse.jgit.transport.{
-  CredentialsProvider,
-  RefSpec,
-  UsernamePasswordCredentialsProvider
-}
-import org.eclipse.jgit.treewalk.{ AbstractTreeIterator, CanonicalTreeParser }
+import org.eclipse.jgit.transport.{ RefSpec, UsernamePasswordCredentialsProvider }
+import org.eclipse.jgit.treewalk.CanonicalTreeParser
 import scala.collection.JavaConverters._
 
 object Git {
@@ -35,13 +31,15 @@ object Git {
     new Git((new FileRepositoryBuilder).setWorkTree(workTree).build())
 }
 
-class Git(repository: Repository) {
+final class Git(repository: Repository) {
 
   private val jgit = new JGit(repository)
 
   /**
-    * @param tagname Name of a tag (not containing 'refs/tags/').
-    * @return Option with the commit id to which given tag points to.
+    * @param tagname
+    *   Name of a tag (not containing 'refs/tags/').
+    * @return
+    *   Option with the commit id to which given tag points to.
     */
   def findCommitIdWithTag(tagname: String): Option[ObjectId] =
     jgit
@@ -49,11 +47,11 @@ class Git(repository: Repository) {
       .call()
       .asScala
       .find(_.getName == s"refs/tags/$tagname")
-      .map(ref => {
+      .map { ref =>
         // Must peel the ref to get the peeledObjectId which points
         // to the commit to which the tags belongs
-        jgit.getRepository.peel(ref).getPeeledObjectId
-      })
+        jgit.getRepository.getRefDatabase.peel(ref).getPeeledObjectId
+      }
 
   def checkout(ref: String, branch: String): Unit = {
     jgit.checkout
@@ -117,10 +115,10 @@ class Git(repository: Repository) {
       .setMode(ResetType.HARD)
       .call()
 
-  private def idAndMessage(commit: RevCommit): (String, String) =
+  private def idAndMessage(commit: RevCommit) =
     commit.shortId -> commit.getShortMessage
 
-  private def tree(ref: String): AbstractTreeIterator = {
+  private def tree(ref: String) = {
     val tree = {
       val walk   = new RevWalk(repository)
       val commit = walk.parseCommit(repository.resolve(ref))
@@ -134,6 +132,6 @@ class Git(repository: Repository) {
     } finally reader.close()
   }
 
-  private def credentialsProvider(username: String, password: String): CredentialsProvider =
+  private def credentialsProvider(username: String, password: String) =
     new UsernamePasswordCredentialsProvider(username, password)
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Heiko Seeberger
+ * Copyright 2016 Heiko Seeberger
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,14 +17,14 @@
 package de.heikoseeberger.sbtgroll
 
 import java.io.File
-import sbt.{ plugins, settingKey, AutoPlugin, Command, Keys, State }
-import scala.reflect.{ classTag, ClassTag }
+import sbt.{ AutoPlugin, Command, Keys, PluginTrigger, State, plugins, settingKey }
+import scala.reflect.{ ClassTag, classTag }
 
 object GrollKey {
 
   final val GrollConfigFileDefault = ".sbt-groll.conf"
 
-  final val GrollHistoryRefDefault = "master"
+  final val GrollHistoryRefDefault = "main"
 
   final val GrollWorkingBranchDefault = "groll"
 
@@ -43,20 +43,24 @@ object GrollKey {
 
 object GrollPlugin extends AutoPlugin {
 
-  val autoImport = GrollKey
+  val autoImport: GrollKey.type =
+    GrollKey
 
   import autoImport._
 
-  override def trigger = allRequirements
+  override def trigger: PluginTrigger =
+    allRequirements
 
-  override def requires = plugins.JvmPlugin
+  override def requires: plugins.JvmPlugin.type =
+    plugins.JvmPlugin
 
-  override def projectSettings = List(
-    Keys.commands += grollCommand,
-    grollConfigFile := new File(System.getProperty("user.home"), GrollConfigFileDefault),
-    grollHistoryRef := GrollHistoryRefDefault,
-    grollWorkingBranch := GrollWorkingBranchDefault
-  )
+  override def projectSettings =
+    List(
+      Keys.commands += grollCommand,
+      grollConfigFile    := new File(System.getProperty("user.home"), GrollConfigFileDefault),
+      grollHistoryRef    := GrollHistoryRefDefault,
+      grollWorkingBranch := GrollWorkingBranchDefault
+    )
 
   private def grollCommand = Command("groll")(parser)(Groll.apply)
 
