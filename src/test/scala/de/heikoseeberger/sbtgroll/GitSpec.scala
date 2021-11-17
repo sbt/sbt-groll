@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Heiko Seeberger
+ * Copyright 2016 Heiko Seeberger
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,11 +19,13 @@ package de.heikoseeberger.sbtgroll
 import java.io.File
 import java.nio.file.{ FileVisitResult, Files, Path, Paths, SimpleFileVisitor }
 import java.nio.file.attribute.BasicFileAttributes
+import org.eclipse.jgit.lib.Repository
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder
-import org.scalatest.{ Matchers, WordSpec }
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 import scala.sys.process._
 
-class GitSpec extends WordSpec with Matchers {
+final class GitSpec extends AnyWordSpec with Matchers {
 
   "Calling Git.checkout" should {
     "check out a new branch with the correct history" in {
@@ -48,7 +50,12 @@ class GitSpec extends WordSpec with Matchers {
       val f = fixture("-dirty")
       import f._
       git.clean()
-      contents(dir).map(_.toString) shouldBe Set("1.txt", "2.txt", "4.txt", "5.txt") // 5.txt has been staged, 6.txt is untracked
+      contents(dir).map(_.toString) shouldBe Set(
+        "1.txt",
+        "2.txt",
+        "4.txt",
+        "5.txt"
+      ) // 5.txt has been staged, 6.txt is untracked
     }
   }
 
@@ -123,12 +130,18 @@ class GitSpec extends WordSpec with Matchers {
     }
   }
 
-  def fixture(qualifier: String = "") =
+  private def fixture(qualifier: String = "") =
     new {
       s"unzip -qo -d $tmpDir src/test/test-repo$qualifier.zip".!
-      val dir        = tmpDir / s"test-repo$qualifier"
-      val repository = (new FileRepositoryBuilder).setWorkTree(dir).build()
-      val git        = new Git(repository)
+
+      val dir: File =
+        tmpDir / s"test-repo$qualifier"
+
+      val repository: Repository =
+        (new FileRepositoryBuilder).setWorkTree(dir).build()
+
+      val git: Git =
+        new Git(repository)
     }
 
   def contents(dir: File): Set[Path] = {

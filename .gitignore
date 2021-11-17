@@ -2,6 +2,7 @@
 lib_managed
 project/project
 target
+.bsp
 
 # Worksheets (Eclipse or IntelliJ)
 *.sc
@@ -20,16 +21,18 @@ target
 
 # ENSIME
 .ensime
-.ensime_lucene
 .ensime_cache
+.ensime_lucene
 
 # Mac
 .DS_Store
 
-# Akka
-ddata*
+# Akka Persistence
 journal
 snapshots
 
 # Log files
 *.log
+
+# jenv
+.java-version

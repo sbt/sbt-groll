@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Heiko Seeberger
+ * Copyright 2016 Heiko Seeberger
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@ package object sbtgroll {
   type Seq[+A]         = scala.collection.immutable.Seq[A]
   type IndexedSeq[+A]  = scala.collection.immutable.IndexedSeq[A]
 
-  implicit class StringOps(val s: String) extends AnyVal {
+  final implicit class StringOps(val s: String) extends AnyVal {
     def decapitalize: String =
       if (s == null)
         null
@@ -36,12 +36,12 @@ package object sbtgroll {
         s.head.toLower +: s.tail
   }
 
-  implicit class ObjectIdOps(val objectId: ObjectId) extends AnyVal {
+  final implicit class ObjectIdOps(val objectId: ObjectId) extends AnyVal {
     def shortId: String =
       objectId.abbreviate(7).name
   }
 
-  implicit class FileOps(val file: File) extends AnyVal {
+  final implicit class FileOps(val file: File) extends AnyVal {
     def /(name: String): File =
       new File(file, name)
   }
