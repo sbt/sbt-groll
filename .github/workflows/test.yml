@@ -16,4 +16,4 @@ jobs:
           distribution: adopt
           java-version: 11
       - uses: coursier/cache-action@v5
-      - run: sbt scripted
+      - run: sbt test
