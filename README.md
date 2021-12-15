@@ -52,7 +52,7 @@ sbt-groll can be configured by the following settings:
 
 - `grollConfigFile: java.io.File` – the configuration file for sbt-groll; "~/.sbt-groll.conf" by
   default
-- `grollHistoryRef: String` – the ref (commit id, branch or tag) used for the Git history; "master"
+- `grollHistoryRef: String` – the ref (commit id, branch or tag) used for the Git history; "main"
   by default
 - `grollWorkingBranch: String` – the working branch used by sbt-groll; "groll" by default
 

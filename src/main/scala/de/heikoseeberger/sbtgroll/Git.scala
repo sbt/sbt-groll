@@ -53,9 +53,9 @@ final class Git(repository: Repository) {
         jgit.getRepository.getRefDatabase.peel(ref).getPeeledObjectId
       }
 
-  def checkout(ref: String, branch: String): Unit = {
+  def checkout(ref: String, branch: String, historyRef: String): Unit = {
     jgit.checkout
-      .setName("master")
+      .setName(historyRef)
       .call()
     jgit.branchDelete
       .setBranchNames(branch)

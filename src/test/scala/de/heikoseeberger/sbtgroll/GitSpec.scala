@@ -31,7 +31,7 @@ final class GitSpec extends AnyWordSpec with Matchers {
     "check out a new branch with the correct history" in {
       val f = fixture()
       import f._
-      git.checkout("872b865", "groll")
+      git.checkout("872b865", "groll", "master")
       git.history("groll") shouldBe List(
         "872b865" -> "Add 2.txt",
         "f695224" -> "Add 1.txt"
