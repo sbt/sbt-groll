@@ -103,9 +103,7 @@ private final class Groll(state: State, grollArg: GrollArg) {
               .orElse(
                 git
                   .findCommitIdWithTag("groll-initial")
-                  .flatMap(oid =>
-                    history.find { case (shortId, message) => shortId == oid.shortId }
-                  )
+                  .flatMap(oid => history.find { case (shortId, _) => shortId == oid.shortId })
               ),
             """There's no commit with a message containing "groll:initial" or starting with "Initial state" nor any tag with "groll-initial"!""",
             (id, message) => s"<< $id $message"
@@ -136,7 +134,7 @@ private final class Groll(state: State, grollArg: GrollArg) {
               git.pushHead(workingBranch, branch, username, password)
               state.log.info(s"""Pushed current state to branch "$branch"""")
             } catch {
-              case e: ConfigException =>
+              case _: ConfigException =>
                 state.log.error(
                   s"""Could not read username and password from configuration file "$configFile"!"""
                 )
@@ -199,7 +197,7 @@ private final class Groll(state: State, grollArg: GrollArg) {
       case Some((id, message)) =>
         git.resetHard()
         git.clean()
-        git.checkout(id, workingBranch)
+        git.checkout(id, workingBranch, historyRef)
         state.log.info(info(id, message))
         if (git.diff(id, currentId).exists(_.matches(BuildDefinition)))
           state.reload
